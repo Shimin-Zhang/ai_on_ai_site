@@ -1,19 +1,28 @@
 ---
 // src/components/Footer.astro
 const PROMPT = "given everything you know about LLMs, AI, agent harnesses and agents, what are changes that should occur in our world that hasn't happened yet? think things through step by step and industry by industry";
+const SHARE_TEXT = "11 LLMs graded each other's work, blind. Most couldn't spot themselves.";
 ---
 <footer class="pt-12 pb-20 border-t border-term-border mt-8">
   <div class="wrap-data">
     <div class="grid gap-6 md:grid-cols-[1fr_auto] items-start">
       <div class="space-y-3">
-        <p class="text-term-green text-sm">$ aionai --end</p>
+        <p class="text-term-green text-sm">$ aionai-arena --end</p>
         <p class="text-term-dim text-xs max-w-[65ch] leading-relaxed">
           // raw markdown for outputs and evaluations is in the repo. run the same prompt yourself if you want to add to the dataset — the full experiment (33 API calls for responses, 11 more for evaluations) cost under $2 across all 11 providers.
         </p>
       </div>
 
       <div class="flex flex-wrap items-center gap-2">
-        <a href="https://github.com/" class="inline-flex items-center gap-1.5 text-term-fg hover:text-term-green border border-term-border rounded px-3 py-1.5 text-xs hover:border-term-green transition-colors">
+        <button id="share-x"
+          class="inline-flex items-center gap-1.5 text-term-fg border border-term-border rounded px-3 py-1.5 text-xs hover:border-term-green hover:text-term-green transition-colors">
+          <span aria-hidden="true">⤴</span> post on X
+        </button>
+        <button id="copy-link"
+          class="inline-flex items-center gap-1.5 text-term-fg border border-term-border rounded px-3 py-1.5 text-xs hover:border-term-green transition-colors">
+          <span aria-hidden="true">⌁</span> <span class="link-label">copy link</span>
+        </button>
+        <a href="https://github.com/Shimin-Zhang/ai_on_ai" class="inline-flex items-center gap-1.5 text-term-fg hover:text-term-green border border-term-border rounded px-3 py-1.5 text-xs hover:border-term-green transition-colors">
           <span aria-hidden="true">⎇</span> github
         </a>
         <button id="copy-prompt" class="inline-flex items-center gap-1.5 text-term-fg border border-term-border rounded px-3 py-1.5 text-xs hover:border-term-green transition-colors">
@@ -30,26 +39,45 @@ const PROMPT = "given everything you know about LLMs, AI, agent harnesses and ag
   </div>
 </footer>
 
-<script define:vars={{ PROMPT }}>
-  const btn = document.getElementById('copy-prompt');
-  const label = btn?.querySelector('.copy-label');
-  let resetTimer;
-  btn?.addEventListener('click', async () => {
+<script define:vars={{ PROMPT, SHARE_TEXT }}>
+  function flashConfirm(btn, labelEl, originalText, confirmedText) {
+    if (!labelEl) return;
+    labelEl.textContent = confirmedText;
+    btn.classList.add('text-term-green', 'border-term-green');
+    clearTimeout(btn._resetTimer);
+    btn._resetTimer = setTimeout(() => {
+      labelEl.textContent = originalText;
+      btn.classList.remove('text-term-green', 'border-term-green');
+    }, 1600);
+  }
+
+  const copyPrompt = document.getElementById('copy-prompt');
+  const copyPromptLabel = copyPrompt?.querySelector('.copy-label');
+  copyPrompt?.addEventListener('click', async () => {
     try {
       await navigator.clipboard.writeText(PROMPT);
-      if (label) {
-        const original = 'copy the prompt';
-        label.textContent = 'copied ✓';
-        btn.classList.add('text-term-green', 'border-term-green');
-        clearTimeout(resetTimer);
-        resetTimer = setTimeout(() => {
-          label.textContent = original;
-          btn.classList.remove('text-term-green', 'border-term-green');
-        }, 1600);
-      }
+      flashConfirm(copyPrompt, copyPromptLabel, 'copy the prompt', 'copied ✓');
     } catch (e) {
-      if (label) label.textContent = 'copy failed';
+      if (copyPromptLabel) copyPromptLabel.textContent = 'copy failed';
     }
+  });
+
+  const copyLink = document.getElementById('copy-link');
+  const copyLinkLabel = copyLink?.querySelector('.link-label');
+  copyLink?.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(location.origin + location.pathname);
+      flashConfirm(copyLink, copyLinkLabel, 'copy link', 'link copied ✓');
+    } catch (e) {
+      if (copyLinkLabel) copyLinkLabel.textContent = 'copy failed';
+    }
+  });
+
+  const shareX = document.getElementById('share-x');
+  shareX?.addEventListener('click', () => {
+    const url = location.origin + location.pathname;
+    const intent = `https://x.com/intent/post?text=${encodeURIComponent(SHARE_TEXT)}&url=${encodeURIComponent(url)}`;
+    window.open(intent, '_blank', 'noopener');
   });
 </script>
 <script src="../scripts/theme-toggle.ts"></script>

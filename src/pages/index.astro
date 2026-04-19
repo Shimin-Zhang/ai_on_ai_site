@@ -15,6 +15,11 @@ import Methodology from '../components/Methodology.astro';
 import Limitations from '../components/Limitations.astro';
 import Footer from '../components/Footer.astro';
 import TopNav from '../components/TopNav.astro';
+
+const title = "AIonAI Arena — 11 LLMs graded each other's work, blind";
+const description = "11 LLMs answered the same prompt, then graded each other's anonymized outputs. Most couldn't recognize themselves.";
+const ogImage = new URL('/og.png', Astro.site).toString();
+const canonical = Astro.site?.toString() ?? '';
 ---
 <!DOCTYPE html>
 <html lang="en">
@@ -28,8 +33,24 @@ import TopNav from '../components/TopNav.astro';
     </script>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>AIonAI — 11 LLMs graded each other</title>
-    <meta name="description" content="11 LLMs answered the same prompt, then graded each other's anonymized outputs. Most couldn't recognize themselves." />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="AIonAI Arena" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="AIonAI Arena — 11 LLMs graded each other's work, blind. Most couldn't spot themselves." />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
   </head>
   <body class="bg-term-bg text-term-fg font-mono">
     <TopNav />

@@ -14,18 +14,22 @@ const bestEvaluator = (evaluators as Evaluator[]).slice().sort((a, b) => a.sharp
 ---
 <section class="pt-10 md:pt-16 pb-16 md:pb-24">
   <div class="wrap-data">
-    <p class="text-term-green text-xs md:text-sm tracking-tight">$ aionai <span class="text-term-dim">--rank --evaluators=11</span></p>
+    <p class="text-term-green text-xs md:text-sm tracking-tight">$ aionai-arena <span class="text-term-dim">--rank --n=11</span></p>
 
     <div class="mt-6 grid gap-10 lg:gap-16 lg:grid-cols-[minmax(0,1fr)_minmax(0,440px)] items-start">
       <div>
-        <h1 class="text-4xl md:text-6xl font-medium leading-[1.05] tracking-tight">
+        <h1 class="text-3xl md:text-5xl font-medium leading-[1.1] tracking-tight">
           <span class="text-term-fg">11 LLMs</span>
-          <span class="text-term-dim">graded each other's</span>
-          <span class="text-term-fg">homework.</span>
+          <span class="text-term-dim">graded each other's work,</span>
+          <span class="text-term-fg">blind.</span>
+          <span class="block mt-2">
+            <span class="text-term-fg">Most couldn't</span>
+            <span class="text-term-dim">spot</span>
+            <span class="text-term-fg">themselves.</span>
+          </span>
         </h1>
-        <p class="mt-6 text-term-dim text-base md:text-lg max-w-[52ch] leading-relaxed">
-          Same prompt, anonymized outputs, blind peer review. The judges were also the contestants.
-          <span class="text-term-fg">Most of them couldn't pick themselves out of a lineup.</span>
+        <p class="mt-6 text-term-dim text-base md:text-lg max-w-[54ch] leading-relaxed">
+          Same prompt for all 11. Outputs anonymized as <span class="text-term-fg">a</span>–<span class="text-term-fg">k</span>. Then every model scored all 11 transcripts and guessed who wrote which — including its own.
         </p>
 
         <div class="mt-8 flex flex-wrap items-center gap-3 text-xs">
