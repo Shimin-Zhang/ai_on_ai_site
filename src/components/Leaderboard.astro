@@ -1,0 +1,39 @@
+---
+// src/components/Leaderboard.astro
+import models from '../data/models.json';
+import type { Model } from '../lib/types';
+
+const sorted = (models as Model[]).slice().sort((a, b) => a.rank - b.rank);
+---
+<section id="leaderboard" class="py-12 border-b border-term-border">
+  <p class="text-term-green text-sm mb-2">## LEADERBOARD</p>
+  <p class="text-term-dim text-xs mb-4">// click a column header to re-sort</p>
+  <div class="overflow-x-auto">
+    <table id="leaderboard-table" class="w-full text-sm border-collapse">
+      <thead>
+        <tr class="border-b border-term-border text-term-dim text-left">
+          <th data-sort="rank" class="cursor-pointer py-2 px-2 hover:text-term-green">#</th>
+          <th data-sort="displayName" class="cursor-pointer py-2 px-2 hover:text-term-green">Model</th>
+          <th data-sort="avgScore" class="cursor-pointer py-2 px-2 text-right hover:text-term-green">Avg /30</th>
+          <th data-sort="reasoning" class="cursor-pointer py-2 px-2 text-right hover:text-term-green">Reasoning</th>
+          <th data-sort="originality" class="cursor-pointer py-2 px-2 text-right hover:text-term-green">Originality</th>
+          <th data-sort="correctness" class="cursor-pointer py-2 px-2 text-right hover:text-term-green">Correctness</th>
+        </tr>
+      </thead>
+      <tbody>
+        {sorted.map((m) => (
+          <tr data-letter={m.letter} class="border-b border-term-border/40 hover:bg-term-surface">
+            <td class="py-2 px-2 text-term-green">{m.rank}</td>
+            <td class="py-2 px-2 text-term-fg">{m.displayName}</td>
+            <td class="py-2 px-2 text-right text-term-yellow">{m.avgScore.toFixed(1)}</td>
+            <td class="py-2 px-2 text-right">{m.reasoning.toFixed(1)}</td>
+            <td class="py-2 px-2 text-right">{m.originality.toFixed(1)}</td>
+            <td class="py-2 px-2 text-right">{m.correctness.toFixed(1)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<script src="../scripts/leaderboard.ts"></script>
