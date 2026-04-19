@@ -7,7 +7,7 @@
 
   <ol class="space-y-4 text-term-fg list-decimal pl-6">
     <li>
-      Sent the same prompt (above) to 11 models via their respective APIs. No system prompt, no few-shot examples, default sampling parameters.
+      Sent the same three-turn conversation (above) to 11 models via their respective APIs. No system prompt, no few-shot examples, default sampling parameters. Each model's response to turn 1 was fed back as assistant history for turn 2, and so on.
     </li>
     <li>
       Collected the raw outputs and stripped any model-identifying preamble. Stored as <code class="text-term-yellow">a.md</code> through <code class="text-term-yellow">k.md</code>.

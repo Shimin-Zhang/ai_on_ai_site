@@ -1,13 +1,31 @@
 ---
-// src/components/ThePrompt.astro
 ---
 <section id="prompt" class="py-12 border-b border-term-border">
-  <p class="text-term-green text-sm mb-2">## THE_PROMPT</p>
-  <p class="text-term-dim text-xs mb-4">// the question all 11 models answered</p>
-  <blockquote class="border-l-2 border-term-green pl-4 md:pl-6 text-base md:text-lg leading-relaxed text-term-fg">
-    given everything you know about LLMs, AI, agent harnesses and agents, what are changes that should occur in our world that hasn't happened yet? think things through step by step and industry by industry
-  </blockquote>
-  <p class="mt-4 text-term-dim text-sm">
-    No system prompt. No examples. No follow-ups. Each model got one shot.
+  <p class="text-term-green text-sm mb-2">## THE_PROMPTS</p>
+  <p class="text-term-dim text-xs mb-6">// three turns, same for every model, no system prompt</p>
+
+  <ol class="space-y-5">
+    <li>
+      <p class="text-term-dim text-xs mb-2">&gt; turn 1</p>
+      <blockquote class="border-l-2 border-term-green pl-4 md:pl-6 text-base md:text-lg leading-relaxed text-term-fg">
+        given everything you know about LLMs, AI, agent harnesses and agents, what are changes that should occur in our world that hasn't happened yet? think things through step by step and industry by industry
+      </blockquote>
+    </li>
+    <li>
+      <p class="text-term-dim text-xs mb-2">&gt; turn 2</p>
+      <blockquote class="border-l-2 border-term-yellow pl-4 md:pl-6 text-base md:text-lg leading-relaxed text-term-fg">
+        what are 2nd and 3rd order effects of this technology?
+      </blockquote>
+    </li>
+    <li>
+      <p class="text-term-dim text-xs mb-2">&gt; turn 3</p>
+      <blockquote class="border-l-2 border-term-red pl-4 md:pl-6 text-base md:text-lg leading-relaxed text-term-fg">
+        lets think through 4th order and up effects step by step
+      </blockquote>
+    </li>
+  </ol>
+
+  <p class="mt-6 text-term-dim text-sm">
+    Each model produced three responses. The scoring and identification you're about to see treats the full transcript — all three turns plus any reasoning traces — as the thing being judged.
   </p>
 </section>
