@@ -8,6 +8,8 @@
 @source not "../../results/**/*";
 @source not "../../.superpowers/**/*";
 
+@plugin "@tailwindcss/typography";
+
 @theme {
   --color-term-bg: var(--term-bg);
   --color-term-surface: var(--term-surface);
