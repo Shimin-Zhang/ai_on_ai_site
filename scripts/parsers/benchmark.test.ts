@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { parseLeaderboard } from './benchmark.js';
+import { parseLeaderboard, parseScoreMatrix } from './benchmark.js';
 
 const SAMPLE_LEADERBOARD = `## 1. Model Score Rankings
 
@@ -29,5 +29,30 @@ describe('parseLeaderboard', () => {
       letter: 'j', rank: 1, avgScore: 27.6, reasoning: 9.6, originality: 9.0, correctness: 9.0,
     });
     expect(result.e).toMatchObject({ rank: 11, avgScore: 21.9 });
+  });
+});
+
+const SAMPLE_MATRIX = `### Score Distribution by Evaluator
+
+Each cell is the total score (/30) the evaluator (column) gave to the model (row).
+
+| Model (letter) | Opus 4.6 | Opus 4.7 | DeepSeek | Gem Flash | Gem Pro | MiniMax | Kimi | GPT-5.4 | Qwen3 | Grok | GLM |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| **claude-opus-4.7 (j)** | 29 | 27 | 27 | 29 | 28 | 25 | 26 | 27 | 29 | 28 | 29 |
+| **claude-opus-4.6 (k)** | 28 | 25 | 27 | 29 | 28 | 26 | 26 | 28 | 26 | 27 | 27 |
+| **gemini-3.1-pro (e)** | 20 | 17 | 23 | 29 | 22 | 21 | 24 | 20 | 20 | 23 | 22 |
+
+---
+
+## 2. Model Identification Guesses
+`;
+
+describe('parseScoreMatrix', () => {
+  it('extracts an 11×11 matrix keyed by [evaluatorLetter][subjectLetter]', () => {
+    const headerOrder = ['k','j','c','f','e','h','i','g','d','b','a'] as const;
+    const result = parseScoreMatrix(SAMPLE_MATRIX, headerOrder);
+    expect(result.k.j).toBe(29);
+    expect(result.b.j).toBe(28);
+    expect(result.f.e).toBe(29);
   });
 });
