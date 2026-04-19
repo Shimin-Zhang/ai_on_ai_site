@@ -128,3 +128,32 @@ export function parseFindings(markdown: string): Findings {
     keyFindings: [], // populated separately if needed
   };
 }
+
+export interface ReflectionEntry {
+  selfScore: number;
+  peerAverage: number;
+  selfDescription: string;
+  peerSummary: string;
+}
+
+export function parseModelReflections(markdown: string): Record<Letter, ReflectionEntry> {
+  const sectionMatch = markdown.match(/## 4\. Model Reflections[\s\S]*?(?=^### Reflection Summary)/m);
+  if (!sectionMatch) throw new Error('Reflections section not found');
+  const blocks = sectionMatch[0].split(/^### [^\n]*\(letter ([a-k])\)/gm);
+  // blocks[0] is preamble; then [letter, body, letter, body, ...]
+  const out: Partial<Record<Letter, ReflectionEntry>> = {};
+  for (let i = 1; i < blocks.length; i += 2) {
+    const letter = blocks[i] as Letter;
+    const body = blocks[i + 1] ?? '';
+    const scoreMatch = body.match(/\*\*Self-score:\*\*\s*(\d+)\/30\s*\|\s*\*\*Peer average:\*\*\s*([\d.]+)\/30/);
+    const selfDescMatch = body.match(/\*\*Self-description:\*\*\s*\n>\s*"([^"]+)"/);
+    const peerMatch = body.match(/\*\*How peers see it:\*\*\s*\n([\s\S]+?)(?=\n\n\*\*Gap:|\n---)/);
+    out[letter] = {
+      selfScore: scoreMatch ? Number(scoreMatch[1]) : 0,
+      peerAverage: scoreMatch ? Number(scoreMatch[2]) : 0,
+      selfDescription: selfDescMatch ? selfDescMatch[1].trim() : '',
+      peerSummary: peerMatch ? peerMatch[1].trim() : '',
+    };
+  }
+  return out as Record<Letter, ReflectionEntry>;
+}

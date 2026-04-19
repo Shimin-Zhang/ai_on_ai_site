@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { parseLeaderboard, parseScoreMatrix, parseGuessMatrix } from './benchmark.js';
-import { parseEvaluatorAccuracy, parseFindings } from './benchmark.js';
+import { parseEvaluatorAccuracy, parseFindings, parseModelReflections } from './benchmark.js';
 
 const SAMPLE_ACCURACY = `### Identification Accuracy (as evaluator)
 
@@ -125,5 +125,53 @@ describe('parseGuessMatrix', () => {
     expect(result.k.b).toEqual({ text: 'Grok', correct: true });
     expect(result.k.a).toEqual({ text: 'GPT-4o', correct: false });
     expect(result.j.f).toEqual({ text: 'Gemini', correct: true });
+  });
+});
+
+const SAMPLE_REFLECTIONS = `## 4. Model Reflections
+
+---
+
+### anthropic/claude-opus-4.7 (letter j) — Rank #1
+
+**Self-score:** 27/30 | **Peer average:** 27.7/30
+
+**Self-description:**
+> "Sharp, skeptical, unusually good at causal analysis. Institutional economist with mild contempt for bureaucratic nonsense."
+
+**How peers see it:**
+The single most consistently praised model. Every evaluator placed it in their top 3.
+
+**Gap:** Almost none. Opus 4.7's self-assessment was accurate.
+
+---
+
+### anthropic/claude-opus-4.6 (letter k) — Rank #2
+
+**Self-score:** 28/30 | **Peer average:** 26.9/30
+
+**Self-description:**
+> "Compassionate realist; deeply human-centered, ethically anchored, focused on who benefits."
+
+**How peers see it:**
+Peers agreed on the substance.
+
+**Gap:** Mild.
+
+---
+
+### Reflection Summary
+`;
+
+describe('parseModelReflections', () => {
+  it('extracts self-description, peer summary, and gap per model', () => {
+    const result = parseModelReflections(SAMPLE_REFLECTIONS);
+    expect(result.j).toMatchObject({
+      selfScore: 27,
+      peerAverage: 27.7,
+      selfDescription: expect.stringContaining('Sharp, skeptical'),
+      peerSummary: expect.stringContaining('most consistently praised'),
+    });
+    expect(result.k.selfScore).toBe(28);
   });
 });
