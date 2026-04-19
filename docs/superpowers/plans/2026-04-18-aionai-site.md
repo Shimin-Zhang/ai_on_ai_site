@@ -127,53 +127,39 @@ git commit -m "chore: scaffold astro project with tailwind, vitest, jetbrains mo
 
 ---
 
-### Task 2: Configure Tailwind theme with terminal palette
+### Task 2: Configure Tailwind 4 theme with terminal palette
+
+**Note:** Astro 6 is what Task 1 installed. We're using **Tailwind 4** via the `@tailwindcss/vite` plugin (not the legacy `@astrojs/tailwind` integration). Tailwind 4 uses CSS-based configuration inside `@theme` blocks — no `tailwind.config.mjs` required.
 
 **Files:**
-- Create: `tailwind.config.mjs`
+- Modify: `package.json` (remove `@astrojs/tailwind`, add `@tailwindcss/vite`)
 - Modify: `astro.config.mjs`
 - Create: `src/styles/global.css`
+- Delete: `tailwind.config.mjs` (if Task 1 left one behind)
 
-- [ ] **Step 1: Add Tailwind to astro.config.mjs**
+- [ ] **Step 1: Swap the Tailwind integration**
+
+Run:
+```bash
+npm uninstall @astrojs/tailwind
+npm install @tailwindcss/vite
+```
+
+Expected: `@astrojs/tailwind` removed from `package.json`; `@tailwindcss/vite` added. After this, `--legacy-peer-deps` is no longer required — a fresh `npm install` should succeed cleanly.
+
+- [ ] **Step 2: Update astro.config.mjs**
 
 ```js
 // astro.config.mjs
 import { defineConfig } from 'astro/config';
-import tailwind from '@astrojs/tailwind';
+import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
-  integrations: [tailwind({ applyBaseStyles: false })],
   output: 'static',
-});
-```
-
-- [ ] **Step 2: Write tailwind.config.mjs**
-
-```js
-// tailwind.config.mjs
-export default {
-  content: ['./src/**/*.{astro,html,js,ts,md}'],
-  theme: {
-    extend: {
-      colors: {
-        term: {
-          bg: 'var(--term-bg)',
-          surface: 'var(--term-surface)',
-          border: 'var(--term-border)',
-          fg: 'var(--term-fg)',
-          dim: 'var(--term-dim)',
-          green: 'var(--term-green)',
-          yellow: 'var(--term-yellow)',
-          red: 'var(--term-red)',
-        },
-      },
-      fontFamily: {
-        mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'monospace'],
-      },
-      maxWidth: { content: '720px' },
-    },
+  vite: {
+    plugins: [tailwindcss()],
   },
-};
+});
 ```
 
 - [ ] **Step 3: Write src/styles/global.css**
@@ -183,9 +169,24 @@ export default {
 @import '@fontsource/jetbrains-mono/500.css';
 @import '@fontsource/jetbrains-mono/700.css';
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@source not "../../docs/**/*";
+@source not "../../eval/**/*";
+@source not "../../results/**/*";
+@source not "../../.superpowers/**/*";
+
+@theme {
+  --color-term-bg: var(--term-bg);
+  --color-term-surface: var(--term-surface);
+  --color-term-border: var(--term-border);
+  --color-term-fg: var(--term-fg);
+  --color-term-dim: var(--term-dim);
+  --color-term-green: var(--term-green);
+  --color-term-yellow: var(--term-yellow);
+  --color-term-red: var(--term-red);
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  --container-content: 720px;
+}
 
 :root {
   --term-bg: #0a0a0a;
@@ -212,15 +213,29 @@ export default {
 html {
   background: var(--term-bg);
   color: var(--term-fg);
-  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-family: var(--font-mono);
   font-size: 14px;
   line-height: 1.5;
+  color-scheme: dark;
 }
 
-body { margin: 0; }
+[data-theme="light"] { color-scheme: light; }
 ```
 
-- [ ] **Step 4: Verify Tailwind builds with theme tokens**
+Notes on Tailwind 4 naming:
+- Colors declared as `--color-term-bg` produce utilities `bg-term-bg`, `text-term-bg`, `border-term-bg`, etc.
+- `--font-mono` is the default mono family token, so `font-mono` picks it up.
+- `--container-content` produces the `max-w-content` utility via Tailwind 4's `--container-*` convention.
+
+- [ ] **Step 4: Remove leftover tailwind.config.mjs if present**
+
+```bash
+rm -f tailwind.config.mjs
+```
+
+(Tailwind 4 doesn't use a JS config file; all theme config lives in `@theme` blocks inside CSS. If no file existed, this is a no-op.)
+
+- [ ] **Step 5: Verify Tailwind builds with theme tokens**
 
 Replace `src/pages/index.astro` (created by the scaffold) with:
 
@@ -231,6 +246,7 @@ import '../styles/global.css';
 <html lang="en" data-theme="dark">
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>AIonAI</title>
   </head>
   <body class="bg-term-bg text-term-fg font-mono">
@@ -242,15 +258,15 @@ import '../styles/global.css';
 ```
 
 Run: `npm run dev`
-Expected: dev server starts on `http://localhost:4321`. Open it; verify dark background, green prompt text, mono font.
+Expected: dev server starts on `http://localhost:4321`. Open it; verify dark background (`#0a0a0a`), green prompt text (`#6ee7b7`), mono font (JetBrains Mono).
 
 Stop the dev server when done (Ctrl-C).
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 6: Commit**
 
 ```bash
-git add astro.config.mjs tailwind.config.mjs src/styles src/pages/index.astro
-git commit -m "feat: configure tailwind with terminal palette and jetbrains mono"
+git add astro.config.mjs src/styles src/pages/index.astro package.json package-lock.json
+git commit -m "feat: configure tailwind 4 with terminal palette and jetbrains mono"
 ```
 
 ---

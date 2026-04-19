@@ -3,6 +3,10 @@
 @import '@fontsource/jetbrains-mono/700.css';
 
 @import "tailwindcss";
+@source not "../../docs/**/*";
+@source not "../../eval/**/*";
+@source not "../../results/**/*";
+@source not "../../.superpowers/**/*";
 
 @theme {
   --color-term-bg: var(--term-bg);
@@ -42,9 +46,10 @@
 html {
   background: var(--term-bg);
   color: var(--term-fg);
-  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-family: var(--font-mono);
   font-size: 14px;
   line-height: 1.5;
+  color-scheme: dark;
 }
 
-body { margin: 0; }
+[data-theme="light"] { color-scheme: light; }
