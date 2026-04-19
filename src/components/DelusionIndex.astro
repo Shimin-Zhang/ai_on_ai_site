@@ -1,0 +1,41 @@
+---
+// src/components/DelusionIndex.astro
+import models from '../data/models.json';
+import type { Model } from '../lib/types';
+
+const sorted = (models as Model[]).slice().sort((a, b) => b.gap - a.gap);
+const maxAbs = Math.max(...sorted.map((m) => Math.abs(m.gap)));
+const ROW_H = 28;
+const LABEL_W = 200;
+const BAR_AREA = 280;
+const W = LABEL_W + BAR_AREA;
+const H = sorted.length * ROW_H + 20;
+const center = LABEL_W + BAR_AREA / 2;
+---
+<section id="delusion" class="py-12 border-b border-term-border">
+  <p class="text-term-green text-sm mb-2">## THE_DELUSION_INDEX</p>
+  <p class="text-term-dim text-xs mb-6">// self-score minus peer-average. positive = inflated self-view.</p>
+
+  <svg viewBox={`0 0 ${W} ${H}`} class="w-full max-w-full">
+    {sorted.map((m, i) => {
+      const y = i * ROW_H + 14;
+      const barLen = Math.abs(m.gap) / maxAbs * (BAR_AREA / 2 - 8);
+      const x1 = m.gap >= 0 ? center : center - barLen;
+      const fill = m.gap >= 0 ? 'var(--term-red)' : 'var(--term-green)';
+      return (
+        <g>
+          <text x={LABEL_W - 8} y={y + 5} text-anchor="end" font-size="12" font-family="JetBrains Mono" fill="var(--term-fg)">
+            [{m.letter}] {m.displayName}
+          </text>
+          <rect x={x1} y={y - 6} width={barLen} height={12} fill={fill} />
+          <text x={m.gap >= 0 ? center + barLen + 4 : center - barLen - 4} y={y + 5}
+                text-anchor={m.gap >= 0 ? 'start' : 'end'}
+                font-size="11" font-family="JetBrains Mono" fill="var(--term-yellow)">
+            {m.gap > 0 ? '+' : ''}{m.gap.toFixed(1)}
+          </text>
+        </g>
+      );
+    })}
+    <line x1={center} x2={center} y1={0} y2={H - 20} stroke="var(--term-border)" stroke-width="1" />
+  </svg>
+</section>
