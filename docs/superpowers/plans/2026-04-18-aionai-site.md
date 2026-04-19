@@ -99,10 +99,12 @@ dist/
 .DS_Store
 .env
 .env.local
-src/data/
+src/data/*
 !src/data/.gitkeep
 .superpowers/
 ```
+
+Note: `src/data/*` (with wildcard) instead of `src/data/` — git won't descend into a directory ignored with a trailing slash to honor negations, so `.gitkeep` can't be un-ignored with the bare-directory form.
 
 (The `src/data/` directory is generated; we gitignore it so the data files stay in sync with source markdown.)
 
@@ -1223,15 +1225,38 @@ function mulberry32(seed: number) {
 }
 
 function getAssistantBody(markdown: string): string {
-  // Match `# assistant` (without "(reasoning)") through end-of-file or next H1.
-  const match = markdown.match(/^#\s*assistant\s*$([\s\S]*?)(?=^#\s|(?![\s\S]))/m);
+  // Match `# assistant` (without "(reasoning)") through end-of-file or next `# user` /
+  // `# assistant (reasoning)`. Do NOT stop at arbitrary `# ` lines — the real result markdown
+  // files embed their own level-1 headings inside the answer body (see results/g.md, h.md, j.md, k.md).
+  const match = markdown.match(/^#\s*assistant\s*$\n([\s\S]+?)(?=^#\s*user\s*$|^#\s*assistant\s*\(reasoning\)|(?![\s\S]))/m);
   if (!match) throw new Error('No # assistant section found');
   return match[1].trim();
 }
 
+function normalizeForSplit(body: string): string {
+  // Convert markdown prose + bullet lists into a flat stream of sentence-like units.
+  // Skip headings and horizontal rules; strip bullet markers; terminate lines that don't
+  // already end in punctuation. Needed because many real answers are bullet-heavy and the
+  // unmodified sentence splitter would lose most of their content.
+  return body
+    .split('\n')
+    .map((line) => {
+      const trimmed = line.trim();
+      if (!trimmed) return '';
+      if (/^#{1,6}\s/.test(trimmed)) return '';
+      if (/^-{3,}$/.test(trimmed)) return '';
+      const stripped = trimmed.replace(/^\s*[-*+]\s+/, '').replace(/^\s*\d+\.\s+/, '');
+      if (!stripped) return '';
+      return /[.!?]$/.test(stripped) ? stripped : stripped + '.';
+    })
+    .filter(Boolean)
+    .join(' ');
+}
+
 function splitSentences(text: string): string[] {
-  const sentences = text.match(/[^.!?\n]+[.!?]+(?:\s|$)/g) ?? [];
-  return sentences.map((s) => s.trim()).filter(Boolean);
+  const normalized = normalizeForSplit(text);
+  const sentences = normalized.match(/[^.!?\n]+[.!?]+(?:\s|$)/g) ?? [];
+  return sentences.map((s) => s.trim()).filter((s) => s.split(/\s+/).length >= 3);
 }
 
 export function sampleSnippets(letter: Letter, markdown: string, seed: number): PuzzleSnippet[] {
