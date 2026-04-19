@@ -892,7 +892,7 @@ export function parseEvaluatorAccuracy(markdown: string): EvaluatorAccuracyRow[]
 }
 
 export function parseFindings(markdown: string): Findings {
-  const sectionMatch = markdown.match(/## 3\. Verdict[\s\S]*?(?=^## 4\.|\n---|\Z)/m);
+  const sectionMatch = markdown.match(/## 3\. Verdict[\s\S]*?(?=^## 4\.|\n---|(?![\s\S]))/m);
   if (!sectionMatch) throw new Error('Verdict section not found');
   const section = sectionMatch[0];
   const subsections = section
@@ -1224,7 +1224,7 @@ function mulberry32(seed: number) {
 
 function getAssistantBody(markdown: string): string {
   // Match `# assistant` (without "(reasoning)") through end-of-file or next H1.
-  const match = markdown.match(/^#\s*assistant\s*$([\s\S]*?)(?=^#\s|\Z)/m);
+  const match = markdown.match(/^#\s*assistant\s*$([\s\S]*?)(?=^#\s|(?![\s\S]))/m);
   if (!match) throw new Error('No # assistant section found');
   return match[1].trim();
 }
@@ -1295,8 +1295,8 @@ export interface SplitOutput {
 }
 
 export function splitOutput(markdown: string): SplitOutput {
-  const reasoningMatch = markdown.match(/^#\s*assistant\s*\(reasoning\)\s*$([\s\S]*?)(?=^#\s*assistant\s*$|\Z)/m);
-  const answerMatch = markdown.match(/^#\s*assistant\s*$([\s\S]*?)\Z/m);
+  const reasoningMatch = markdown.match(/^#\s*assistant\s*\(reasoning\)\s*$([\s\S]*?)(?=^#\s*assistant\s*$|(?![\s\S]))/m);
+  const answerMatch = markdown.match(/^#\s*assistant\s*$([\s\S]*?)(?![\s\S])/m);
   return {
     reasoning: reasoningMatch ? reasoningMatch[1].trim() : null,
     answer: answerMatch ? answerMatch[1].trim() : markdown.trim(),
