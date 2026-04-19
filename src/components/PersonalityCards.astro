@@ -24,6 +24,10 @@ const all = (models as Model[]).slice().sort((a, b) => a.rank - b.rank);
             <p class="text-term-fg mt-1 leading-relaxed">{m.peerSummary}</p>
           </div>
           <div>
+            <p class="text-term-green text-xs">// IN ITS OWN WORDS</p>
+            <p class="text-term-fg mt-1 leading-relaxed italic">"{m.selfDescription}"</p>
+          </div>
+          <div>
             <p class="text-term-green text-xs">
               // SELF-AWARENESS ·
               <span class={
