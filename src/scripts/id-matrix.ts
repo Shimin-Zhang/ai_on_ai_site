@@ -27,3 +27,14 @@ function position(event: MouseEvent) {
   tooltip.style.left = `${Math.min(x, window.innerWidth - tooltip.offsetWidth - 8)}px`;
   tooltip.style.top = `${Math.min(y, window.innerHeight - tooltip.offsetHeight - 8)}px`;
 }
+
+const isTouchDevice = window.matchMedia('(hover: none)').matches;
+if (isTouchDevice) {
+  document.querySelectorAll<HTMLElement>('.idcell').forEach((cell) => {
+    cell.addEventListener('click', (event) => {
+      event.stopPropagation();
+      show(cell, event as unknown as MouseEvent);
+    });
+  });
+  document.addEventListener('click', () => tooltip?.classList.add('hidden'));
+}

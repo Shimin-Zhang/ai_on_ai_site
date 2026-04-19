@@ -33,3 +33,14 @@ function positionTooltip(event: MouseEvent) {
 function hideTooltip() {
   tooltip?.classList.add('hidden');
 }
+
+const isTouchDevice = window.matchMedia('(hover: none)').matches;
+if (isTouchDevice) {
+  document.querySelectorAll<HTMLElement>('.heatcell').forEach((cell) => {
+    cell.addEventListener('click', (event) => {
+      event.stopPropagation();
+      showTooltip(cell, event as unknown as MouseEvent);
+    });
+  });
+  document.addEventListener('click', () => hideTooltip());
+}
