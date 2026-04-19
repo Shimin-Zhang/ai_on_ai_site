@@ -23,6 +23,18 @@ const all = (models as Model[]).slice().sort((a, b) => a.rank - b.rank);
             <p class="text-term-green text-xs">// HOW PEERS SEE IT</p>
             <p class="text-term-fg mt-1 leading-relaxed">{m.peerSummary}</p>
           </div>
+          <div>
+            <p class="text-term-green text-xs">
+              // SELF-AWARENESS ·
+              <span class={
+                m.selfAwareness.level === 'highest' ? 'text-term-green'
+                : m.selfAwareness.level === 'high' ? 'text-term-fg'
+                : m.selfAwareness.level === 'medium' ? 'text-term-yellow'
+                : 'text-term-red'
+              }>{m.selfAwareness.level}</span>
+            </p>
+            <p class="text-term-dim mt-1 leading-relaxed">{m.selfAwareness.note}</p>
+          </div>
           <div class="flex flex-wrap gap-4 text-xs">
             <span>self: <span class="text-term-yellow">{m.selfScore}</span></span>
             <span>peer-avg: <span class="text-term-yellow">{m.peerAverage.toFixed(1)}</span></span>

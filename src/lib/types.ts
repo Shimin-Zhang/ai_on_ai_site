@@ -18,6 +18,10 @@ export interface Model {
   signatureQuotes: string[];
   recognizedSelf: 'yes' | 'family' | 'brand-leak' | 'no';
   timesCorrectlyIdentified: number;
+  selfAwareness: {
+    level: 'low' | 'medium' | 'high' | 'highest';
+    note: string;
+  };
 }
 
 export type ScoreMatrix = Record<Letter, Record<Letter, number>>;

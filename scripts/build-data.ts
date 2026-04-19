@@ -69,6 +69,7 @@ function main() {
       signatureQuotes: [], // optional — leave empty for now; can backfill
       recognizedSelf: recognized,
       timesCorrectlyIdentified: 0, // populated below
+      selfAwareness: selfAwarenessFor(ak.slug),
     };
   });
 
@@ -152,6 +153,24 @@ function recognitionFor(slug: string): Model['recognizedSelf'] {
     'z-ai/glm-5.1': 'no',
   };
   return map[slug] ?? 'no';
+}
+
+function selfAwarenessFor(slug: string): Model['selfAwareness'] {
+  // Hard-coded from benchmark_results.md §4 "Reflection Summary" — the Self-Awareness column.
+  const map: Record<string, Model['selfAwareness']> = {
+    'google/gemini-2.5-flash': { level: 'low', note: '"rigorous" self-view vs. peers\' "conventional"' },
+    'x-ai/grok-4.20': { level: 'low', note: '"truth-seeker" self-view vs. peers\' "sycophantic"' },
+    'qwen/qwen3-max-thinking': { level: 'low', note: '"poetic" self-view vs. peers\' "prescriptive"' },
+    'anthropic/claude-opus-4.6': { level: 'high', note: 'slight emphasis shift; peers saw more ambition than compassion' },
+    'moonshotai/kimi-k2.5': { level: 'medium', note: 'darker self-view than peers' },
+    'deepseek/deepseek-v3.2': { level: 'high', note: 'matched peer consensus' },
+    'minimax/minimax-m2.7': { level: 'high', note: '"dry" self-critique matched peers' },
+    'z-ai/glm-5.1': { level: 'highest', note: 'most accurate self-critic of all 11' },
+    'anthropic/claude-opus-4.7': { level: 'high', note: 'precise self-read; described itself the way peers did' },
+    'openai/gpt-5.4': { level: 'highest', note: 'modest, accurate, and undersold itself' },
+    'google/gemini-3.1-pro-preview': { level: 'high', note: 'honest about its own weaknesses' },
+  };
+  return map[slug] ?? { level: 'medium', note: '' };
 }
 
 main();
