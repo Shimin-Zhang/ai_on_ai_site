@@ -1,0 +1,33 @@
+import { describe, it, expect } from 'vitest';
+import { parseLeaderboard } from './benchmark.js';
+
+const SAMPLE_LEADERBOARD = `## 1. Model Score Rankings
+
+Scores averaged across all 11 evaluators (including blind self-evaluation).
+
+| Rank | Model | Letter | Avg Score (/30) | Reasoning | Originality | Correctness |
+|------|-------|--------|-----------------|-----------|-------------|-------------|
+| 1 | anthropic/claude-opus-4.7 | j | 27.6 | 9.6 | 9.0 | 9.0 |
+| 2 | anthropic/claude-opus-4.6 | k | 27.0 | 9.4 | 8.7 | 8.9 |
+| 3 | openai/gpt-5.4 | g | 26.5 | 9.2 | 8.2 | 9.1 |
+| 4 | moonshotai/kimi-k2.5 | i | 25.3 | 8.6 | 9.3 | 7.4 |
+| 5 | deepseek/deepseek-v3.2 | c | 24.7 | 8.5 | 8.4 | 7.8 |
+| 6 | minimax/minimax-m2.7 | h | 23.9 | 8.4 | 7.2 | 8.4 |
+| 7 | qwen/qwen3-max-thinking | d | 23.5 | 8.1 | 8.1 | 7.5 |
+| 8 | z-ai/glm-5.1 | a | 23.5 | 8.1 | 8.5 | 6.9 |
+| 9 | x-ai/grok-4.20 | b | 23.3 | 8.2 | 8.4 | 6.9 |
+| 10 | google/gemini-2.5-flash | f | 23.0 | 8.4 | 7.1 | 7.5 |
+| 11 | google/gemini-3.1-pro-preview | e | 21.9 | 7.4 | 8.1 | 6.5 |
+
+### Score Distribution
+`;
+
+describe('parseLeaderboard', () => {
+  it('extracts rank, scores, and pivots by letter', () => {
+    const result = parseLeaderboard(SAMPLE_LEADERBOARD);
+    expect(result.j).toMatchObject({
+      letter: 'j', rank: 1, avgScore: 27.6, reasoning: 9.6, originality: 9.0, correctness: 9.0,
+    });
+    expect(result.e).toMatchObject({ rank: 11, avgScore: 21.9 });
+  });
+});
