@@ -1,0 +1,40 @@
+---
+// src/components/PersonalityCards.astro
+import models from '../data/models.json';
+import type { Model } from '../lib/types';
+const all = (models as Model[]).slice().sort((a, b) => a.rank - b.rank);
+---
+<section id="personalities" class="py-12 border-b border-term-border">
+  <p class="text-term-green text-sm mb-2">## MEET_THE_CONTESTANTS</p>
+  <p class="text-term-dim text-xs mb-6">// click a card to expand. links from elsewhere on the page open it.</p>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+    {all.map((m) => (
+      <article id={`card-${m.letter}`} class="card bg-term-surface border border-term-border rounded p-4 cursor-pointer" data-letter={m.letter}>
+        <header class="flex items-baseline justify-between gap-2">
+          <span class="text-term-green text-xs font-mono">[{m.letter}] #{m.rank}</span>
+          <span class="text-term-yellow text-xs font-mono">{m.avgScore.toFixed(1)}/30</span>
+        </header>
+        <h3 class="mt-1 text-term-fg font-medium">{m.displayName}</h3>
+        <p class="mt-2 text-term-dim text-sm italic">"{m.selfDescription}"</p>
+
+        <div class="card-detail hidden mt-4 space-y-3 text-sm">
+          <div>
+            <p class="text-term-green text-xs">// HOW PEERS SEE IT</p>
+            <p class="text-term-fg mt-1 leading-relaxed">{m.peerSummary}</p>
+          </div>
+          <div class="flex flex-wrap gap-4 text-xs">
+            <span>self: <span class="text-term-yellow">{m.selfScore}</span></span>
+            <span>peer-avg: <span class="text-term-yellow">{m.peerAverage.toFixed(1)}</span></span>
+            <span class={m.gap > 0 ? 'text-term-red' : 'text-term-green'}>
+              gap: {m.gap > 0 ? '+' : ''}{m.gap.toFixed(1)}
+            </span>
+            <span>recognized self: <span class="text-term-fg">{m.recognizedSelf}</span></span>
+          </div>
+        </div>
+      </article>
+    ))}
+  </div>
+</section>
+
+<script src="../scripts/personality-cards.ts"></script>
