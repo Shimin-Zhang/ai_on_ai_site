@@ -5,26 +5,25 @@ const bodies = Array.from(document.querySelectorAll<HTMLElement>('.output-body')
 function show(letter: string) {
   bodies.forEach((b) => {
     b.classList.toggle('hidden', b.dataset.letter !== letter);
-    // Reset clamp state on switch
-    b.classList.remove('expanded');
-    b.querySelectorAll<HTMLElement>('.reasoning-block').forEach((r) => r.classList.remove('expanded'));
+    // Reset expand state on every section within this body
+    b.querySelectorAll('.expanded').forEach((el) => el.classList.remove('expanded'));
   });
 }
 
 function applyReasoning() {
   const showIt = reasoningToggle?.checked ?? false;
   bodies.forEach((b) => {
-    const block = b.querySelector<HTMLElement>('.reasoning-block');
-    if (block) block.classList.toggle('hidden', !showIt);
+    b.querySelectorAll<HTMLElement>('.reasoning-block').forEach((block) => {
+      block.classList.toggle('hidden', !showIt);
+    });
   });
 }
 
-// Expand buttons toggle the `expanded` class on the NEAREST clamp container.
-// The reasoning trace has its own clamp inside `.reasoning-block`; the answer's clamp
-// is a direct child of `.output-body`.
+// Each expand button targets its immediate parent wrapper — either the .reasoning-block
+// or the answer's containing div.
 document.querySelectorAll<HTMLButtonElement>('.output-expand').forEach((btn) => {
   btn.addEventListener('click', () => {
-    const scope = btn.closest('.reasoning-block') ?? btn.closest('.output-body');
+    const scope = btn.parentElement;
     scope?.classList.add('expanded');
   });
 });

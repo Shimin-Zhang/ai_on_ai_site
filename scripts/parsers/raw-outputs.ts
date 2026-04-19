@@ -1,13 +1,45 @@
-export interface SplitOutput {
+export interface Turn {
+  user: string;
   reasoning: string | null;
-  answer: string;
+  assistant: string;
 }
 
-export function splitOutput(markdown: string): SplitOutput {
-  const reasoningMatch = markdown.match(/^#\s*assistant\s*\(reasoning\)\s*$([\s\S]*?)(?=^#\s*assistant\s*$|(?![\s\S]))/m);
-  const answerMatch = markdown.match(/^#\s*assistant\s*$([\s\S]*?)(?![\s\S])/m);
-  return {
-    reasoning: reasoningMatch ? reasoningMatch[1].trim() : null,
-    answer: answerMatch ? answerMatch[1].trim() : markdown.trim(),
+export interface Transcript {
+  turns: Turn[];
+}
+
+export function parseTranscript(markdown: string): Transcript {
+  const headingRegex = /^#\s*(user|assistant\s*\(reasoning\)|assistant)\s*$/gm;
+  const matches = [...markdown.matchAll(headingRegex)];
+  const turns: Turn[] = [];
+  let current: Partial<Turn> = {};
+
+  const flush = () => {
+    if (current.user !== undefined) {
+      turns.push({
+        user: current.user,
+        reasoning: current.reasoning ?? null,
+        assistant: current.assistant ?? '',
+      });
+    }
   };
+
+  for (let i = 0; i < matches.length; i++) {
+    const match = matches[i];
+    const nextStart = matches[i + 1]?.index ?? markdown.length;
+    const body = markdown.slice(match.index! + match[0].length, nextStart).trim();
+    const heading = match[1].trim().toLowerCase();
+
+    if (heading === 'user') {
+      flush();
+      current = { user: body };
+    } else if (heading.startsWith('assistant (reasoning)')) {
+      current.reasoning = body;
+    } else if (heading === 'assistant') {
+      current.assistant = body;
+    }
+  }
+  flush();
+
+  return { turns };
 }

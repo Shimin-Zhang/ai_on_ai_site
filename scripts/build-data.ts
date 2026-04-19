@@ -11,7 +11,7 @@ import {
 } from './parsers/benchmark.js';
 import { extractQuotesFromEvalMarkdown } from './parsers/eval-quotes.js';
 import { sampleSnippets } from './parsers/puzzle-snippets.js';
-import { splitOutput } from './parsers/raw-outputs.js';
+import { parseTranscript } from './parsers/raw-outputs.js';
 
 const ROOT = process.cwd();
 const EVAL_DIR = join(ROOT, 'eval');
@@ -121,8 +121,8 @@ function main() {
       continue;
     }
     const md = readFileSync(src, 'utf-8');
-    const split = splitOutput(md);
-    writeFileSync(join(OUTPUTS_DIR, `${letter}.json`), JSON.stringify(split, null, 2));
+    const transcript = parseTranscript(md);
+    writeFileSync(join(OUTPUTS_DIR, `${letter}.json`), JSON.stringify(transcript, null, 2));
     puzzleSnippets[letter] = sampleSnippets(letter, md, snippetSeed++);
   }
 
