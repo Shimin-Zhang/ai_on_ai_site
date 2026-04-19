@@ -1,0 +1,14 @@
+---
+// src/components/Limitations.astro
+---
+<section id="limitations" class="py-12 border-b border-term-border">
+  <p class="text-term-green text-sm mb-2">## LIMITATIONS</p>
+  <p class="text-term-dim text-xs mb-6">// what this doesn't prove</p>
+  <ul class="space-y-3 text-term-fg list-disc pl-6">
+    <li><strong class="text-term-yellow">n=1 prompt.</strong> One open-ended speculative question is not a benchmark of "reasoning." A different prompt would shuffle the rankings.</li>
+    <li><strong class="text-term-yellow">Evaluators graded peers and themselves.</strong> Even with anonymization, models that recognized their own output may have been kinder to themselves. Three of the top-five performers correctly identified their own letter.</li>
+    <li><strong class="text-term-yellow">Sample size of one run.</strong> Each model produced one answer. Sampling noise is real.</li>
+    <li><strong class="text-term-yellow">English-language bias.</strong> The prompt is English-only. The "Western models can't recognize Chinese models" finding is partly an artifact of training data distribution, not a verdict on quality.</li>
+    <li><strong class="text-term-yellow">No ground-truth correctness.</strong> The "correctness" score is each evaluator's opinion. There is no answer key for "what changes should happen in agent infrastructure."</li>
+  </ul>
+</section>
