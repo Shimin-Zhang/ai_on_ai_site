@@ -2,22 +2,54 @@
 // src/components/Footer.astro
 const PROMPT = "given everything you know about LLMs, AI, agent harnesses and agents, what are changes that should occur in our world that hasn't happened yet? think things through step by step and industry by industry";
 ---
-<footer class="py-12 mt-8">
-  <div class="flex flex-wrap items-baseline justify-between gap-4 text-sm">
-    <div class="flex flex-wrap gap-4 items-center">
-      <a href="https://github.com/" class="text-term-green hover:underline">github →</a>
-      <button id="copy-prompt" class="text-term-fg border border-term-border rounded px-2 py-1 hover:bg-term-border">copy the prompt</button>
+<footer class="pt-12 pb-20 border-t border-term-border mt-8">
+  <div class="wrap-data">
+    <div class="grid gap-6 md:grid-cols-[1fr_auto] items-start">
+      <div class="space-y-3">
+        <p class="text-term-green text-sm">$ aionai --end</p>
+        <p class="text-term-dim text-xs max-w-[65ch] leading-relaxed">
+          // raw markdown for outputs and evaluations is in the repo. run the same prompt yourself if you want to add to the dataset — the full experiment (33 API calls for responses, 11 more for evaluations) cost under $2 across all 11 providers.
+        </p>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-2">
+        <a href="https://github.com/" class="inline-flex items-center gap-1.5 text-term-fg hover:text-term-green border border-term-border rounded px-3 py-1.5 text-xs hover:border-term-green transition-colors">
+          <span aria-hidden="true">⎇</span> github
+        </a>
+        <button id="copy-prompt" class="inline-flex items-center gap-1.5 text-term-fg border border-term-border rounded px-3 py-1.5 text-xs hover:border-term-green transition-colors">
+          <span aria-hidden="true">⎘</span> <span class="copy-label">copy the prompt</span>
+        </button>
+        <button id="theme-toggle"
+          aria-label="Toggle theme"
+          class="inline-flex items-center gap-1.5 text-term-dim border border-term-border rounded px-3 py-1.5 text-xs hover:border-term-fg hover:text-term-fg transition-colors">
+          <span class="theme-icon" aria-hidden="true">●</span>
+          <span class="theme-label">dark</span>
+        </button>
+      </div>
     </div>
-    <button id="theme-toggle" class="text-term-dim border border-term-border rounded px-2 py-1 hover:bg-term-border">[ ] light mode</button>
   </div>
-  <p class="mt-6 text-term-dim text-xs">
-    // raw markdown for outputs and evaluations is in the repo. run the same prompt yourself if you want to add to the dataset — the full experiment (33 API calls for responses, 11 more for evaluations) cost under $2 across all 11 providers.
-  </p>
 </footer>
 
 <script define:vars={{ PROMPT }}>
-  document.getElementById('copy-prompt')?.addEventListener('click', () => {
-    navigator.clipboard.writeText(PROMPT);
+  const btn = document.getElementById('copy-prompt');
+  const label = btn?.querySelector('.copy-label');
+  let resetTimer;
+  btn?.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(PROMPT);
+      if (label) {
+        const original = 'copy the prompt';
+        label.textContent = 'copied ✓';
+        btn.classList.add('text-term-green', 'border-term-green');
+        clearTimeout(resetTimer);
+        resetTimer = setTimeout(() => {
+          label.textContent = original;
+          btn.classList.remove('text-term-green', 'border-term-green');
+        }, 1600);
+      }
+    } catch (e) {
+      if (label) label.textContent = 'copy failed';
+    }
   });
 </script>
 <script src="../scripts/theme-toggle.ts"></script>

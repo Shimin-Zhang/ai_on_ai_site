@@ -2,41 +2,69 @@
 // src/components/Leaderboard.astro
 import models from '../data/models.json';
 import type { Model } from '../lib/types';
+import SectionHeader from '../lib/SectionHeader.astro';
 
 const sorted = (models as Model[]).slice().sort((a, b) => a.rank - b.rank);
+const maxScore = sorted[0].avgScore;
+const minScore = sorted[sorted.length - 1].avgScore;
 ---
-<section id="leaderboard" class="py-12 border-b border-term-border">
-  <p class="text-term-green text-sm mb-2">## LEADERBOARD</p>
-  <p class="text-term-dim text-xs mb-4">// click a column header to re-sort</p>
-  <div class="overflow-x-auto">
-    <table id="leaderboard-table" class="w-full text-sm border-collapse">
-      <thead>
-        <tr class="border-b border-term-border text-term-dim text-left">
-          <th data-sort="rank" class="cursor-pointer py-2 px-2 hover:text-term-green">#</th>
-          <th data-sort="letter" class="cursor-pointer py-2 px-2 hover:text-term-green">Letter</th>
-          <th data-sort="displayName" class="cursor-pointer py-2 px-2 hover:text-term-green">Model</th>
-          <th data-sort="avgScore" class="cursor-pointer py-2 px-2 text-right hover:text-term-green">Avg /30</th>
-          <th data-sort="reasoning" class="cursor-pointer py-2 px-2 text-right hover:text-term-green">Reasoning</th>
-          <th data-sort="originality" class="cursor-pointer py-2 px-2 text-right hover:text-term-green">Originality</th>
-          <th data-sort="correctness" class="cursor-pointer py-2 px-2 text-right hover:text-term-green">Correctness</th>
-        </tr>
-      </thead>
-      <tbody>
-        {sorted.map((m) => (
-          <tr data-letter={m.letter} class="border-b border-term-border/40 hover:bg-term-surface">
-            <td class="py-2 px-2 text-term-green">{m.rank}</td>
-            <td class="py-2 px-2 font-mono text-term-dim">
-              <a href={`#card-${m.letter}`} class="hover:text-term-green">[{m.letter}]</a>
-            </td>
-            <td class="py-2 px-2 text-term-fg">{m.displayName}</td>
-            <td class="py-2 px-2 text-right text-term-yellow">{m.avgScore.toFixed(1)}</td>
-            <td class="py-2 px-2 text-right">{m.reasoning.toFixed(1)}</td>
-            <td class="py-2 px-2 text-right">{m.originality.toFixed(1)}</td>
-            <td class="py-2 px-2 text-right">{m.correctness.toFixed(1)}</td>
+<section id="leaderboard" class="py-16 md:py-20">
+  <div class="wrap-data">
+    <SectionHeader num="02" title="LEADERBOARD">
+      {sorted.length} models · sum of 3 dims (1–10) ·
+      <span class="text-term-fg">click any header to re-sort</span>
+    </SectionHeader>
+
+    <div class="overflow-x-auto rounded-md border border-term-border bg-term-surface/40">
+      <table id="leaderboard-table" class="w-full text-sm">
+        <thead>
+          <tr class="text-term-dim text-left text-[11px] tracking-wider uppercase border-b border-term-border">
+            <th data-sort="rank"         class="cursor-pointer py-2.5 px-3 w-10 hover:text-term-green">#</th>
+            <th data-sort="letter"       class="cursor-pointer py-2.5 px-2 w-14 hover:text-term-green">letter</th>
+            <th data-sort="displayName"  class="cursor-pointer py-2.5 px-2 hover:text-term-green">model</th>
+            <th data-sort="avgScore"     class="cursor-pointer py-2.5 px-3 text-right hover:text-term-green tabular-nums">avg / 30</th>
+            <th class="py-2.5 px-3 w-[22%] text-term-dim/60">relative</th>
+            <th data-sort="reasoning"    class="cursor-pointer py-2.5 px-3 text-right hover:text-term-green tabular-nums">reason</th>
+            <th data-sort="originality"  class="cursor-pointer py-2.5 px-3 text-right hover:text-term-green tabular-nums">orig</th>
+            <th data-sort="correctness"  class="cursor-pointer py-2.5 px-3 text-right hover:text-term-green tabular-nums">correct</th>
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {sorted.map((m) => {
+            const pct = ((m.avgScore - minScore) / (maxScore - minScore)) * 100;
+            const isTop = m.rank < 4;
+            return (
+              <tr
+                data-letter={m.letter}
+                class={`border-b border-term-border/50 last:border-b-0 transition-colors hover:bg-term-surface ${isTop ? 'bg-term-surface/50' : ''}`}
+              >
+                <td class={`py-2.5 px-3 tabular-nums ${isTop ? 'text-term-green font-medium' : 'text-term-dim'}`}>{m.rank}</td>
+                <td class="py-2.5 px-2 text-term-dim">
+                  <a href={`#card-${m.letter}`} class="hover:text-term-green">[{m.letter}]</a>
+                </td>
+                <td class="py-2.5 px-2 text-term-fg">{m.displayName}</td>
+                <td class="py-2.5 px-3 text-right">
+                  <span class={`tabular-nums ${isTop ? 'text-term-yellow font-medium' : 'text-term-yellow/90'}`}>{m.avgScore.toFixed(1)}</span>
+                </td>
+                <td class="py-2.5 px-3">
+                  <div class="h-1.5 bg-term-border/60 rounded-sm overflow-hidden w-full">
+                    <div class={`h-full ${isTop ? 'bg-term-green' : 'bg-term-dim'}`} style={`width: ${Math.max(pct, 4)}%`}></div>
+                  </div>
+                </td>
+                <td class="py-2.5 px-3 text-right text-term-fg tabular-nums">{m.reasoning.toFixed(1)}</td>
+                <td class="py-2.5 px-3 text-right text-term-fg tabular-nums">{m.originality.toFixed(1)}</td>
+                <td class="py-2.5 px-3 text-right text-term-fg tabular-nums">{m.correctness.toFixed(1)}</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+
+    <p class="mt-3 text-term-dim text-xs">
+      // bar is normalized against the spread ({minScore.toFixed(1)}–{maxScore.toFixed(1)}).
+      Top-3 highlighted; every evaluator put at least one Claude in their top three.
+    </p>
   </div>
 </section>
 

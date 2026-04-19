@@ -5,10 +5,14 @@ const stored = localStorage.getItem(KEY);
 if (stored === 'light') html.setAttribute('data-theme', 'light');
 
 const button = document.getElementById('theme-toggle') as HTMLButtonElement | null;
+
 function syncLabel() {
   if (!button) return;
+  const icon = button.querySelector<HTMLElement>('.theme-icon');
+  const label = button.querySelector<HTMLElement>('.theme-label');
   const isLight = html.getAttribute('data-theme') === 'light';
-  button.textContent = isLight ? '[x] light mode' : '[ ] light mode';
+  if (icon)  icon.textContent  = isLight ? '◐' : '◑';
+  if (label) label.textContent = isLight ? 'light' : 'dark';
 }
 syncLabel();
 

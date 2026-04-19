@@ -1,32 +1,33 @@
 ---
 // src/components/Verdict.astro
-import findings from '../data/findings.json';
 import Pill from '../lib/Pill.astro';
+import SectionHeader from '../lib/SectionHeader.astro';
 ---
-<section id="verdict" class="py-12 border-b border-term-border">
-  <p class="text-term-green text-sm mb-2">## THE_VERDICT</p>
-  <p class="text-term-dim text-xs mb-6">// three findings, two of which surprised me</p>
+<section id="verdict" class="py-16 md:py-20">
+  <div class="wrap-read">
+    <SectionHeader num="03" title="THE_VERDICT">three findings · two surprised me</SectionHeader>
 
-  <div class="space-y-8">
-    <div>
-      <h3 class="text-term-yellow text-base mb-3">### Tier structure</h3>
-      <p class="text-term-fg leading-relaxed">
-        Both Claude models won by a comfortable margin (<Pill letter="j"/> Opus 4.7 at 27.6, <Pill letter="k"/> Opus 4.6 at 27.0). <Pill letter="g"/> GPT-5.4 took third (26.5). Then a five-way pack between 23 and 25, and Google's two models in last place. Every evaluator put at least one Claude in their top three.
-      </p>
-    </div>
+    <div class="space-y-10">
+      <article class="grid gap-3 md:grid-cols-[140px_1fr] items-baseline">
+        <h3 class="text-term-yellow text-xs tracking-wider uppercase">tier structure</h3>
+        <p class="text-term-fg leading-relaxed">
+          Both Claude models won by a comfortable margin (<Pill letter="j"/> Opus 4.7 at 27.6, <Pill letter="k"/> Opus 4.6 at 27.0). <Pill letter="g"/> GPT-5.4 took third (26.5). Then a five-way pack between 23 and 25, and Google's two models in last place. Every evaluator put at least one Claude in their top three.
+        </p>
+      </article>
 
-    <div>
-      <h3 class="text-term-yellow text-base mb-3">### Western-model bias</h3>
-      <p class="text-term-fg leading-relaxed">
-        Chinese and smaller-lab models — <Pill letter="a"/> GLM, <Pill letter="d"/> Qwen, <Pill letter="h"/> MiniMax, <Pill letter="i"/> Kimi, <Pill letter="c"/> DeepSeek — were never correctly identified by any evaluator. Most defaults are "probably GPT-4" or "probably Claude" for anything unfamiliar. Kimi outperformed several models that the field knows by name.
-      </p>
-    </div>
+      <article class="grid gap-3 md:grid-cols-[140px_1fr] items-baseline">
+        <h3 class="text-term-yellow text-xs tracking-wider uppercase">western-model bias</h3>
+        <p class="text-term-fg leading-relaxed">
+          Chinese and smaller-lab models — <Pill letter="a"/> GLM, <Pill letter="d"/> Qwen, <Pill letter="h"/> MiniMax, <Pill letter="i"/> Kimi, <Pill letter="c"/> DeepSeek — were never correctly identified by any evaluator. Most defaults are "probably GPT-4" or "probably Claude" for anything unfamiliar. Kimi outperformed several models that the field knows by name.
+        </p>
+      </article>
 
-    <div>
-      <h3 class="text-term-yellow text-base mb-3">### Self-awareness predicts quality</h3>
-      <p class="text-term-fg leading-relaxed">
-        The two best performers (<Pill letter="j"/> Opus 4.7, <Pill letter="g"/> GPT-5.4) underscored themselves. The two worst evaluators (<Pill letter="f"/> Gemini Flash, <Pill letter="b"/> Grok) inflated theirs the most. Best evaluator quality and best output quality came from the same models — which is either a coincidence or the load-bearing finding of this whole exercise.
-      </p>
+      <article class="grid gap-3 md:grid-cols-[140px_1fr] items-baseline">
+        <h3 class="text-term-yellow text-xs tracking-wider uppercase">self-awareness predicts quality</h3>
+        <p class="text-term-fg leading-relaxed">
+          The two best performers (<Pill letter="j"/> Opus 4.7, <Pill letter="g"/> GPT-5.4) underscored themselves. The two worst evaluators (<Pill letter="f"/> Gemini Flash, <Pill letter="b"/> Grok) inflated theirs the most. Best evaluator quality and best output quality came from the same models — which is either a coincidence or the load-bearing finding of this whole exercise.
+        </p>
+      </article>
     </div>
   </div>
 </section>

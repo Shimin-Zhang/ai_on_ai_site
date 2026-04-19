@@ -1,0 +1,57 @@
+---
+const items = [
+  { id: 'prompt',        label: 'prompt' },
+  { id: 'leaderboard',   label: 'leaderboard' },
+  { id: 'verdict',       label: 'verdict' },
+  { id: 'personalities', label: 'models' },
+  { id: 'delusion',      label: 'delusion' },
+  { id: 'beat-the-ais',  label: 'puzzle' },
+  { id: 'heatmap',       label: 'heatmap' },
+  { id: 'id-matrix',     label: 'ids' },
+  { id: 'explorer',      label: 'raw' },
+];
+---
+<nav class="sticky top-0 z-40 backdrop-blur border-b border-term-border/60 bg-term-bg/85">
+  <div class="wrap-data flex items-center gap-4 px-4 md:px-6 h-9 text-xs">
+    <a href="#top" class="text-term-green font-medium tracking-tight whitespace-nowrap">$ aionai</a>
+    <ul class="flex items-center gap-3 md:gap-4 overflow-x-auto scrollbar-none flex-1 min-w-0">
+      {items.map((i) => (
+        <li class="whitespace-nowrap">
+          <a href={`#${i.id}`} class="nav-link text-term-dim hover:text-term-fg transition-colors">{i.label}</a>
+        </li>
+      ))}
+    </ul>
+    <a href="#limitations" class="text-term-dim hover:text-term-fg whitespace-nowrap hidden sm:inline">caveats</a>
+  </div>
+</nav>
+<span id="top"></span>
+
+<style>
+  .scrollbar-none::-webkit-scrollbar { display: none; }
+  .scrollbar-none { scrollbar-width: none; }
+  .nav-link.active { color: var(--term-green); }
+</style>
+
+<script>
+  const links = document.querySelectorAll<HTMLAnchorElement>('.nav-link');
+  const byId = new Map<string, HTMLAnchorElement>();
+  links.forEach((a) => {
+    const id = a.getAttribute('href')?.slice(1);
+    if (id) byId.set(id, a);
+  });
+  const sections = Array.from(byId.keys())
+    .map((id) => document.getElementById(id))
+    .filter((el): el is HTMLElement => !!el);
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (e.isIntersecting) {
+        const id = (e.target as HTMLElement).id;
+        links.forEach((l) => l.classList.remove('active'));
+        byId.get(id)?.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-40% 0px -55% 0px', threshold: 0 });
+
+  sections.forEach((s) => io.observe(s));
+</script>

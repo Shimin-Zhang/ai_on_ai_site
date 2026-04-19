@@ -1,12 +1,88 @@
 ---
 // src/components/Hero.astro
+import models from '../data/models.json';
+import evaluators from '../data/evaluators.json';
+import type { Model, Evaluator } from '../lib/types';
+
+const sorted = (models as Model[]).slice().sort((a, b) => a.rank - b.rank);
+const top3 = sorted.slice(0, 3);
+const last = sorted[sorted.length - 1];
+const maxScore = sorted[0].avgScore;
+const minScore = last.avgScore;
+
+const bestEvaluator = (evaluators as Evaluator[]).slice().sort((a, b) => a.sharpnessRank - b.sharpnessRank)[0];
 ---
-<section class="py-12 md:py-20 border-b border-term-border">
-  <p class="text-term-green text-sm">$ aionai --rank --evaluators=11</p>
-  <h1 class="mt-4 text-3xl md:text-5xl font-mono font-medium leading-tight tracking-tight">
-    11 LLMs graded each other's homework.
-  </h1>
-  <p class="mt-4 text-term-dim text-base md:text-lg max-w-content leading-relaxed">
-    Same prompt, anonymized outputs, blind peer review. The judges were also the contestants. Most of them couldn't pick themselves out of a lineup.
-  </p>
+<section class="pt-10 md:pt-16 pb-16 md:pb-24">
+  <div class="wrap-data">
+    <p class="text-term-green text-xs md:text-sm tracking-tight">$ aionai <span class="text-term-dim">--rank --evaluators=11</span></p>
+
+    <div class="mt-6 grid gap-10 lg:gap-16 lg:grid-cols-[minmax(0,1fr)_minmax(0,440px)] items-start">
+      <div>
+        <h1 class="text-4xl md:text-6xl font-medium leading-[1.05] tracking-tight">
+          <span class="text-term-fg">11 LLMs</span>
+          <span class="text-term-dim">graded each other's</span>
+          <span class="text-term-fg">homework.</span>
+        </h1>
+        <p class="mt-6 text-term-dim text-base md:text-lg max-w-[52ch] leading-relaxed">
+          Same prompt, anonymized outputs, blind peer review. The judges were also the contestants.
+          <span class="text-term-fg">Most of them couldn't pick themselves out of a lineup.</span>
+        </p>
+
+        <div class="mt-8 flex flex-wrap items-center gap-3 text-xs">
+          <a href="#leaderboard" class="inline-flex items-center gap-2 bg-term-green text-term-bg px-3 py-2 rounded font-medium hover:opacity-90 transition-opacity">
+            see the leaderboard <span aria-hidden="true">→</span>
+          </a>
+          <a href="#beat-the-ais" class="inline-flex items-center gap-2 border border-term-border px-3 py-2 rounded text-term-fg hover:bg-term-surface transition-colors">
+            try to beat the AIs
+          </a>
+          <a href="#methodology" class="text-term-dim hover:text-term-fg transition-colors px-2 py-2">methodology</a>
+        </div>
+      </div>
+
+      <aside class="border border-term-border rounded-md bg-term-surface/60 p-5 md:p-6">
+        <div class="flex items-baseline justify-between mb-4">
+          <p class="text-term-green text-xs">## TOP_3</p>
+          <p class="text-term-dim text-xs">avg of 10 peer scores · out of 30</p>
+        </div>
+
+        <ol class="space-y-3">
+          {top3.map((m, i) => {
+            const pct = ((m.avgScore - minScore) / (maxScore - minScore)) * 100;
+            return (
+              <li class="group">
+                <a href={`#card-${m.letter}`} class="block">
+                  <div class="flex items-baseline gap-3">
+                    <span class="text-term-dim text-xs w-4">{i + 1}</span>
+                    <span class="text-term-fg text-sm font-medium flex-1 group-hover:text-term-green transition-colors">{m.displayName}</span>
+                    <span class="text-term-yellow text-sm tabular-nums">{m.avgScore.toFixed(1)}</span>
+                  </div>
+                  <div class="mt-2 ml-7 h-[3px] bg-term-border rounded-sm overflow-hidden">
+                    <div class="h-full bg-term-green" style={`width: ${pct}%`}></div>
+                  </div>
+                </a>
+              </li>
+            );
+          })}
+        </ol>
+
+        <div class="mt-5 pt-4 border-t border-term-border grid grid-cols-3 gap-3 text-[11px]">
+          <div>
+            <p class="text-term-dim">last</p>
+            <p class="text-term-fg mt-1">{last.displayName}</p>
+            <p class="text-term-red tabular-nums mt-0.5">{last.avgScore.toFixed(1)}</p>
+          </div>
+          <div>
+            <p class="text-term-dim">best id</p>
+            <p class="text-term-fg mt-1">{bestEvaluator.displayName.replace('Claude ', '')}</p>
+            <p class="text-term-yellow tabular-nums mt-0.5">{bestEvaluator.accuracyPct}% <span class="text-term-dim">of 11</span></p>
+          </div>
+          <div>
+            <p class="text-term-dim">random</p>
+            <p class="text-term-fg mt-1">baseline</p>
+            <p class="text-term-dim tabular-nums mt-0.5">9%</p>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
 </section>

@@ -3,23 +3,23 @@
 import puzzleSnippets from '../data/puzzle-snippets.json';
 import models from '../data/models.json';
 import type { Model } from '../lib/types';
+import SectionHeader from '../lib/SectionHeader.astro';
 
 const choices = (models as Model[]).map((m) => ({ letter: m.letter, displayName: m.displayName }));
 ---
-<section id="beat-the-ais" class="py-12 border-b border-term-border">
-  <p class="text-term-green text-sm mb-2">## BEAT_THE_AIS</p>
-  <p class="text-term-dim text-xs mb-4">
-    // 5 snippets, multiple choice. best AI evaluator hit 45%. median was 18%. random is ~9%.
-  </p>
+<section id="beat-the-ais" class="py-16 md:py-20">
+  <div class="wrap-data">
+    <SectionHeader num="06" title="BEAT_THE_AIS">5 snippets · best AI: 45% · median AI: 18% · random: ~9%</SectionHeader>
 
-  <div
-    id="puzzle-root"
-    data-snippets={JSON.stringify(puzzleSnippets)}
-    data-choices={JSON.stringify(choices)}
-    data-identifications={JSON.stringify(Object.fromEntries((models as Model[]).map((m) => [m.letter, m.timesCorrectlyIdentified])))}
-  >
-    <div id="puzzle-board" class="bg-term-surface border border-term-border rounded p-4 md:p-6">
-      <p class="text-term-dim text-xs">// loading puzzle...</p>
+    <div
+      id="puzzle-root"
+      data-snippets={JSON.stringify(puzzleSnippets)}
+      data-choices={JSON.stringify(choices)}
+      data-identifications={JSON.stringify(Object.fromEntries((models as Model[]).map((m) => [m.letter, m.timesCorrectlyIdentified])))}
+    >
+      <div id="puzzle-board" class="bg-term-surface/60 border border-term-border rounded-md p-4 md:p-6">
+        <p class="text-term-dim text-xs">// loading puzzle...</p>
+      </div>
     </div>
   </div>
 </section>

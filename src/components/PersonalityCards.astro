@@ -2,54 +2,72 @@
 // src/components/PersonalityCards.astro
 import models from '../data/models.json';
 import type { Model } from '../lib/types';
-const all = (models as Model[]).slice().sort((a, b) => a.rank - b.rank);
+import SectionHeader from '../lib/SectionHeader.astro';
+
+const sorted = (models as Model[]).slice().sort((a, b) => a.rank - b.rank);
+
+function awareColor(level: Model['selfAwareness']['level']): string {
+  if (level === 'highest') return 'text-term-green';
+  if (level === 'high')    return 'text-term-fg';
+  if (level === 'medium')  return 'text-term-yellow';
+  return 'text-term-red';
+}
 ---
-<section id="personalities" class="py-12 border-b border-term-border">
-  <p class="text-term-green text-sm mb-2">## MEET_THE_CONTESTANTS</p>
-  <p class="text-term-dim text-xs mb-6">// click a card to expand. links from elsewhere on the page open it.</p>
+<section id="personalities" class="py-16 md:py-20">
+  <div class="wrap-data">
+    <SectionHeader num="04" title="MEET_THE_CONTESTANTS">click a card to expand · links from elsewhere open it</SectionHeader>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-    {all.map((m) => (
-      <article id={`card-${m.letter}`} class="card bg-term-surface border border-term-border rounded p-4 cursor-pointer" data-letter={m.letter}>
-        <header class="flex items-baseline justify-between gap-2">
-          <span class="text-term-green text-xs font-mono">[{m.letter}] #{m.rank}</span>
-          <span class="text-term-yellow text-xs font-mono">{m.avgScore.toFixed(1)}/30</span>
-        </header>
-        <h3 class="mt-1 text-term-fg font-medium">{m.displayName}</h3>
-        <p class="mt-2 text-term-dim text-sm italic">"{m.selfDescription}"</p>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+      {sorted.map((m) => {
+        const rail =
+          m.rank < 4  ? 'before:bg-term-green'
+          : m.rank > 8 ? 'before:bg-term-red/60'
+          : 'before:bg-term-dim/60';
+        return (
+          <article
+            id={`card-${m.letter}`}
+            data-letter={m.letter}
+            class={`card relative isolate bg-term-surface border border-term-border rounded-md p-4 cursor-pointer transition-colors hover:border-term-dim
+                    before:content-[''] before:absolute before:left-0 before:top-3 before:bottom-3 before:w-[3px] before:rounded-r ${rail}`}
+          >
+            <header class="flex items-baseline justify-between gap-2">
+              <span class="text-term-dim text-[11px] tabular-nums">
+                <span class="text-term-green">[{m.letter}]</span> #{m.rank}
+              </span>
+              <span class="text-term-yellow text-xs tabular-nums">{m.avgScore.toFixed(1)}<span class="text-term-dim">/30</span></span>
+            </header>
+            <h3 class="mt-2 text-term-fg text-[15px] font-medium leading-tight">{m.displayName}</h3>
+            <p class="mt-2 text-term-dim text-sm italic leading-relaxed line-clamp-3">"{m.selfDescription}"</p>
 
-        <div class="card-detail hidden mt-4 space-y-3 text-sm">
-          <div>
-            <p class="text-term-green text-xs">// HOW PEERS SEE IT</p>
-            <p class="text-term-fg mt-1 leading-relaxed">{m.peerSummary}</p>
-          </div>
-          <div>
-            <p class="text-term-green text-xs">// IN ITS OWN WORDS</p>
-            <p class="text-term-fg mt-1 leading-relaxed italic">"{m.selfDescription}"</p>
-          </div>
-          <div>
-            <p class="text-term-green text-xs">
-              // SELF-AWARENESS ·
-              <span class={
-                m.selfAwareness.level === 'highest' ? 'text-term-green'
-                : m.selfAwareness.level === 'high' ? 'text-term-fg'
-                : m.selfAwareness.level === 'medium' ? 'text-term-yellow'
-                : 'text-term-red'
-              }>{m.selfAwareness.level}</span>
-            </p>
-            <p class="text-term-dim mt-1 leading-relaxed">{m.selfAwareness.note}</p>
-          </div>
-          <div class="flex flex-wrap gap-4 text-xs">
-            <span>self: <span class="text-term-yellow">{m.selfScore}</span></span>
-            <span>peer-avg: <span class="text-term-yellow">{m.peerAverage.toFixed(1)}</span></span>
-            <span class={m.gap > 0 ? 'text-term-red' : 'text-term-green'}>
-              gap: {m.gap > 0 ? '+' : ''}{m.gap.toFixed(1)}
-            </span>
-            <span>recognized self: <span class="text-term-fg">{m.recognizedSelf}</span></span>
-          </div>
-        </div>
-      </article>
-    ))}
+            <div class="card-detail hidden mt-4 space-y-3 text-sm">
+              <div>
+                <p class="text-term-green text-[11px] tracking-wider">// HOW PEERS SEE IT</p>
+                <p class="text-term-fg mt-1 leading-relaxed">{m.peerSummary}</p>
+              </div>
+              <div>
+                <p class="text-term-green text-[11px] tracking-wider">// IN ITS OWN WORDS</p>
+                <p class="text-term-fg mt-1 leading-relaxed italic">"{m.selfDescription}"</p>
+              </div>
+              <div>
+                <p class="text-term-green text-[11px] tracking-wider">
+                  // SELF-AWARENESS ·
+                  <span class={awareColor(m.selfAwareness.level)}>{m.selfAwareness.level}</span>
+                </p>
+                <p class="text-term-dim mt-1 leading-relaxed">{m.selfAwareness.note}</p>
+              </div>
+              <div class="grid grid-cols-2 gap-x-4 gap-y-1 text-[11px] pt-2 border-t border-term-border">
+                <span class="text-term-dim">self <span class="text-term-yellow tabular-nums">{m.selfScore}</span></span>
+                <span class="text-term-dim">peer-avg <span class="text-term-yellow tabular-nums">{m.peerAverage.toFixed(1)}</span></span>
+                <span class={`${m.gap > 0 ? 'text-term-red' : 'text-term-green'} tabular-nums`}>
+                  gap: {m.gap > 0 ? '+' : ''}{m.gap.toFixed(1)}
+                </span>
+                <span class="text-term-dim">recognized: <span class="text-term-fg">{m.recognizedSelf}</span></span>
+              </div>
+            </div>
+          </article>
+        );
+      })}
+    </div>
   </div>
 </section>
 

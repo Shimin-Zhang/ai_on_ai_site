@@ -2,41 +2,85 @@
 // src/components/DelusionIndex.astro
 import models from '../data/models.json';
 import type { Model } from '../lib/types';
+import SectionHeader from '../lib/SectionHeader.astro';
 
 const sorted = (models as Model[]).slice().sort((a, b) => b.gap - a.gap);
 const maxAbs = Math.max(...sorted.map((m) => Math.abs(m.gap)));
-const ROW_H = 28;
-const LABEL_W = 200;
-const BAR_AREA = 280;
-const TEXT_PAD = 56; // room at edges for bar-end value labels like "+5.2"
-const W = LABEL_W + BAR_AREA + TEXT_PAD;
-const H = sorted.length * ROW_H + 20;
-const center = LABEL_W + BAR_AREA / 2;
----
-<section id="delusion" class="py-12 border-b border-term-border">
-  <p class="text-term-green text-sm mb-2">## THE_DELUSION_INDEX</p>
-  <p class="text-term-dim text-xs mb-6">// self-score minus peer-average. positive = inflated self-view.</p>
 
-  <svg viewBox={`0 0 ${W} ${H}`} class="w-full max-w-full">
-    {sorted.map((m, i) => {
-      const y = i * ROW_H + 14;
-      const barLen = Math.abs(m.gap) / maxAbs * (BAR_AREA / 2 - 8);
-      const x1 = m.gap >= 0 ? center : center - barLen;
-      const fill = m.gap >= 0 ? 'var(--term-red)' : 'var(--term-green)';
-      return (
-        <g>
-          <text x={LABEL_W - 8} y={y + 5} text-anchor="end" font-size="12" font-family="JetBrains Mono" fill="var(--term-fg)">
-            [{m.letter}] {m.displayName}
-          </text>
-          <rect x={x1} y={y - 6} width={barLen} height={12} fill={fill} />
-          <text x={m.gap >= 0 ? center + barLen + 4 : center - barLen - 4} y={y + 5}
+const ROW_H   = 32;
+const LABEL_W = 220;
+const VALUE_W = 48;
+const SIDE_PAD = 12;
+const VB_W = 900; // viewBox reference width — svg scales via CSS
+const BAR_AREA = VB_W - LABEL_W - VALUE_W - SIDE_PAD * 2;
+const center = LABEL_W + SIDE_PAD + BAR_AREA / 2;
+const H = sorted.length * ROW_H + 44;
+---
+<section id="delusion" class="py-16 md:py-20">
+  <div class="wrap-data">
+    <SectionHeader num="05" title="THE_DELUSION_INDEX">self-score minus peer-average · positive = inflated</SectionHeader>
+
+    <div class="rounded-md border border-term-border bg-term-surface/40 p-4 md:p-6">
+      <svg viewBox={`0 0 ${VB_W} ${H}`} class="w-full h-auto" preserveAspectRatio="xMidYMid meet">
+        <defs>
+          <linearGradient id="gradHi" x1="0" x2="1">
+            <stop offset="0" stop-color="var(--term-red)" stop-opacity="0.35"/>
+            <stop offset="1" stop-color="var(--term-red)" stop-opacity="0.95"/>
+          </linearGradient>
+          <linearGradient id="gradLo" x1="1" x2="0">
+            <stop offset="0" stop-color="var(--term-green)" stop-opacity="0.35"/>
+            <stop offset="1" stop-color="var(--term-green)" stop-opacity="0.95"/>
+          </linearGradient>
+        </defs>
+
+        {/* gridlines */}
+        {[-6, -3, 3, 6].map((t) => {
+          const x = center + (t / maxAbs) * (BAR_AREA / 2);
+          return (
+            <g>
+              <line x1={x} x2={x} y1={24} y2={H - 20} stroke="var(--term-border)" stroke-width="1" stroke-dasharray="2 4"/>
+              <text x={x} y={18} text-anchor="middle" font-size="10" font-family="JetBrains Mono" fill="var(--term-dim)">
+                {t > 0 ? `+${t}` : t}
+              </text>
+            </g>
+          );
+        })}
+
+        {/* axis labels */}
+        <text x={LABEL_W + SIDE_PAD} y={H - 4} font-size="10" font-family="JetBrains Mono" fill="var(--term-green)">underscores self ←</text>
+        <text x={VB_W - SIDE_PAD} y={H - 4} text-anchor="end" font-size="10" font-family="JetBrains Mono" fill="var(--term-red)">→ overscores self</text>
+
+        {/* zero line */}
+        <line x1={center} x2={center} y1={24} y2={H - 20} stroke="var(--term-dim)" stroke-width="1.5"/>
+
+        {sorted.map((m, i) => {
+          const y = i * ROW_H + 38;
+          const barLen = Math.abs(m.gap) / maxAbs * (BAR_AREA / 2 - 6);
+          const x1 = m.gap >= 0 ? center : center - barLen;
+          const fill = m.gap >= 0 ? 'url(#gradHi)' : 'url(#gradLo)';
+          return (
+            <g>
+              <text x={LABEL_W} y={y + 4} text-anchor="end" font-size="13" font-family="JetBrains Mono" fill="var(--term-fg)">
+                <tspan fill="var(--term-dim)">[{m.letter}]</tspan> {m.displayName}
+              </text>
+              <rect x={x1} y={y - 8} width={Math.max(barLen, 1)} height={16} rx="2" fill={fill} />
+              <text
+                x={m.gap >= 0 ? center + barLen + 6 : center - barLen - 6}
+                y={y + 4}
                 text-anchor={m.gap >= 0 ? 'start' : 'end'}
-                font-size="11" font-family="JetBrains Mono" fill="var(--term-yellow)">
-            {m.gap > 0 ? '+' : ''}{m.gap.toFixed(1)}
-          </text>
-        </g>
-      );
-    })}
-    <line x1={center} x2={center} y1={0} y2={H - 20} stroke="var(--term-border)" stroke-width="1" />
-  </svg>
+                font-size="12" font-family="JetBrains Mono" fill="var(--term-yellow)"
+              >
+                {m.gap > 0 ? '+' : ''}{m.gap.toFixed(1)}
+              </text>
+            </g>
+          );
+        })}
+      </svg>
+    </div>
+
+    <p class="mt-3 text-term-dim text-xs max-w-[72ch]">
+      // The two best performers underscore themselves. The worst evaluators inflate theirs the most.
+      Either a coincidence, or the load-bearing finding.
+    </p>
+  </div>
 </section>

@@ -4,6 +4,7 @@ import models from '../data/models.json';
 import scores from '../data/scores.json';
 import quotes from '../data/eval-quotes.json';
 import type { Model, ScoreMatrix, EvalQuotes, Letter } from '../lib/types';
+import SectionHeader from '../lib/SectionHeader.astro';
 
 const evaluatorOrder: Letter[] = ['k','j','c','f','e','h','i','g','d','b','a'];
 const subjectOrder: Letter[] = (models as Model[]).slice().sort((a, b) => a.rank - b.rank).map((m) => m.letter);
@@ -14,59 +15,81 @@ const maxScore = Math.max(...allScores);
 
 function color(value: number): string {
   const t = (value - minScore) / (maxScore - minScore);
-  // Mix var(--term-border) at t=0 → var(--term-green) at t=1, with mid-gray pivot
   if (t < 0.5) {
     const u = t * 2;
     return `color-mix(in srgb, var(--term-border) ${(1 - u) * 100}%, var(--term-dim) ${u * 100}%)`;
-  } else {
-    const u = (t - 0.5) * 2;
-    return `color-mix(in srgb, var(--term-dim) ${(1 - u) * 100}%, var(--term-green) ${u * 100}%)`;
   }
+  const u = (t - 0.5) * 2;
+  return `color-mix(in srgb, var(--term-dim) ${(1 - u) * 100}%, var(--term-green) ${u * 100}%)`;
 }
 ---
-<section id="heatmap" class="py-12 border-b border-term-border">
-  <p class="text-term-green text-sm mb-2">## SCORE_HEATMAP</p>
-  <p class="text-term-dim text-xs mb-4">// hover any cell for the actual evaluator quote. yellow ring = self-evaluation.</p>
+<section id="heatmap" class="py-16 md:py-20">
+  <div class="wrap-data">
+    <SectionHeader num="07" title="SCORE_HEATMAP">11×11 · hover a cell for the evaluator quote · <span class="text-term-yellow">yellow outline</span> = self-eval</SectionHeader>
 
-  <div class="overflow-x-auto">
-    <table class="border-collapse text-xs">
-      <thead>
-        <tr>
-          <th class="p-1"></th>
-          {subjectOrder.map((s) => (
-            <th class="p-1 text-term-dim font-normal text-center" title={modelByLetter[s].displayName}>[{s}]</th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {evaluatorOrder.map((ev) => (
-          <tr>
-            <th class="p-1 pr-2 text-term-dim font-normal text-right whitespace-nowrap" title={modelByLetter[ev].displayName}>
-              [{ev}] {modelByLetter[ev].displayName}
-            </th>
-            {subjectOrder.map((sub) => {
-              const score = (scores as ScoreMatrix)[ev][sub];
-              const quote = (quotes as EvalQuotes)[ev]?.[sub] ?? null;
-              const isDiagonal = ev === sub;
-              return (
-                <td class="p-0">
-                  <div
-                    class={`heatcell w-8 h-8 cursor-pointer ${isDiagonal ? 'ring-1 ring-term-yellow' : ''}`}
-                    style={`background: ${color(score)}`}
-                    data-evaluator={ev}
-                    data-subject={sub}
-                    data-score={score}
-                    data-quote={quote ?? ''}
-                  ></div>
-                </td>
-              );
-            })}
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <div class="rounded-md border border-term-border bg-term-surface/40 p-4 md:p-6">
+      <div class="overflow-x-auto">
+        <table class="border-collapse text-xs mx-auto">
+          <thead>
+            <tr>
+              <th class="p-1"></th>
+              <th class="p-1 pl-2 pb-3 text-term-dim text-[10px] font-normal text-center" colspan={subjectOrder.length}>
+                ▼ SUBJECT (ranked best → worst)
+              </th>
+            </tr>
+            <tr>
+              <th class="p-1"></th>
+              {subjectOrder.map((s) => (
+                <th class="p-1 text-term-dim font-normal text-center" title={modelByLetter[s].displayName}>[{s}]</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {evaluatorOrder.map((ev) => (
+              <tr>
+                <th class="p-1 pr-3 text-term-dim font-normal text-right whitespace-nowrap text-[11px]" title={modelByLetter[ev].displayName}>
+                  <span class="text-term-dim">[{ev}]</span> <span class="text-term-fg">{modelByLetter[ev].displayName}</span>
+                </th>
+                {subjectOrder.map((sub) => {
+                  const score = (scores as ScoreMatrix)[ev][sub];
+                  const quote = (quotes as EvalQuotes)[ev]?.[sub] ?? null;
+                  const isDiagonal = ev === sub;
+                  return (
+                    <td class="p-[2px]">
+                      <div
+                        class={`heatcell w-9 h-9 rounded-[2px] cursor-pointer transition-transform hover:scale-110 hover:z-10 relative ${isDiagonal ? 'outline outline-2 outline-term-yellow' : ''}`}
+                        style={`background: ${color(score)}`}
+                        data-evaluator={ev}
+                        data-subject={sub}
+                        data-score={score}
+                        data-quote={quote ?? ''}
+                      ></div>
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* legend */}
+      <div class="mt-5 flex flex-wrap items-center gap-4 text-[11px] text-term-dim">
+        <span>score scale:</span>
+        <div class="flex items-center gap-1">
+          <span>{minScore}</span>
+          <div class="flex">
+            {[0, 0.2, 0.4, 0.6, 0.8, 1].map((t) => (
+              <span class="w-6 h-3 block" style={`background: ${color(minScore + (maxScore - minScore) * t)}`}></span>
+            ))}
+          </div>
+          <span>{maxScore}</span>
+        </div>
+        <span class="ml-2 inline-flex items-center gap-1.5"><span class="w-3 h-3 block outline outline-2 outline-term-yellow bg-term-border rounded-[2px]"></span>self-evaluation</span>
+      </div>
+    </div>
   </div>
-  <div id="heatmap-tooltip" class="hidden fixed z-50 max-w-xs bg-term-surface border border-term-green rounded p-3 text-xs shadow-lg pointer-events-none"></div>
+  <div id="heatmap-tooltip" class="hidden fixed z-50 max-w-xs bg-term-surface border border-term-green rounded p-3 text-xs shadow-xl pointer-events-none"></div>
 </section>
 
 <script src="../scripts/heatmap.ts"></script>

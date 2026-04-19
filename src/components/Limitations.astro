@@ -1,14 +1,25 @@
 ---
 // src/components/Limitations.astro
+import SectionHeader from '../lib/SectionHeader.astro';
+const items = [
+  { head: 'n=1 prompt', body: 'One open-ended speculative question is not a benchmark of "reasoning." A different prompt would shuffle the rankings.' },
+  { head: 'evaluators graded themselves', body: 'Even with anonymization, models that recognized their own output may have been kinder to themselves. Three of the top-five performers correctly identified their own letter.' },
+  { head: 'single run', body: 'Each model produced one answer. Sampling noise is real.' },
+  { head: 'english-language bias', body: 'The prompt is English-only. The "Western models can\'t recognize Chinese models" finding is partly an artifact of training data distribution, not a verdict on quality.' },
+  { head: 'no ground-truth correctness', body: 'The "correctness" score is each evaluator\'s opinion. There is no answer key for "what changes should happen in agent infrastructure."' },
+];
 ---
-<section id="limitations" class="py-12 border-b border-term-border">
-  <p class="text-term-green text-sm mb-2">## LIMITATIONS</p>
-  <p class="text-term-dim text-xs mb-6">// what this doesn't prove</p>
-  <ul class="space-y-3 text-term-fg list-disc pl-6">
-    <li><strong class="text-term-yellow">n=1 prompt.</strong> One open-ended speculative question is not a benchmark of "reasoning." A different prompt would shuffle the rankings.</li>
-    <li><strong class="text-term-yellow">Evaluators graded peers and themselves.</strong> Even with anonymization, models that recognized their own output may have been kinder to themselves. Three of the top-five performers correctly identified their own letter.</li>
-    <li><strong class="text-term-yellow">Sample size of one run.</strong> Each model produced one answer. Sampling noise is real.</li>
-    <li><strong class="text-term-yellow">English-language bias.</strong> The prompt is English-only. The "Western models can't recognize Chinese models" finding is partly an artifact of training data distribution, not a verdict on quality.</li>
-    <li><strong class="text-term-yellow">No ground-truth correctness.</strong> The "correctness" score is each evaluator's opinion. There is no answer key for "what changes should happen in agent infrastructure."</li>
-  </ul>
+<section id="limitations" class="py-16 md:py-20">
+  <div class="wrap-read">
+    <SectionHeader num="12" title="LIMITATIONS">what this doesn't prove</SectionHeader>
+
+    <ul class="space-y-4">
+      {items.map((it) => (
+        <li class="grid gap-2 md:grid-cols-[200px_1fr] md:gap-5 items-baseline">
+          <h3 class="text-term-yellow text-xs tracking-wider uppercase">{it.head}</h3>
+          <p class="text-term-fg leading-relaxed">{it.body}</p>
+        </li>
+      ))}
+    </ul>
+  </div>
 </section>

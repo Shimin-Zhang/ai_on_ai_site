@@ -14,6 +14,7 @@ import RawOutputExplorer from '../components/RawOutputExplorer.astro';
 import Methodology from '../components/Methodology.astro';
 import Limitations from '../components/Limitations.astro';
 import Footer from '../components/Footer.astro';
+import TopNav from '../components/TopNav.astro';
 ---
 <!DOCTYPE html>
 <html lang="en">
@@ -31,7 +32,8 @@ import Footer from '../components/Footer.astro';
     <meta name="description" content="11 LLMs answered the same prompt, then graded each other's anonymized outputs. Most couldn't recognize themselves." />
   </head>
   <body class="bg-term-bg text-term-fg font-mono">
-    <main class="max-w-content mx-auto px-4 md:px-6">
+    <TopNav />
+    <main class="px-4 md:px-6">
       <Hero />
       <ThePrompt />
       <Leaderboard />

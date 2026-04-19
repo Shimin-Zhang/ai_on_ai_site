@@ -2,6 +2,7 @@
 import models from '../data/models.json';
 import { marked } from 'marked';
 import type { Model } from '../lib/types';
+import SectionHeader from '../lib/SectionHeader.astro';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
@@ -27,56 +28,57 @@ const outputs = sorted.map((m) => {
   };
 });
 ---
-<section id="explorer" class="py-12 border-b border-term-border">
-  <p class="text-term-green text-sm mb-2">## RAW_OUTPUT_EXPLORER</p>
-  <p class="text-term-dim text-xs mb-4">// pick a model. read the full three-turn transcript.</p>
+<section id="explorer" class="py-16 md:py-20">
+  <div class="wrap-data">
+    <SectionHeader num="10" title="RAW_OUTPUT_EXPLORER">pick a model · full three-turn transcript</SectionHeader>
 
-  <div class="flex flex-wrap items-center gap-3 mb-6">
-    <label class="text-term-dim text-sm">MODEL:</label>
-    <select id="output-select" class="bg-term-surface border border-term-border rounded px-2 py-1 text-term-fg">
-      {sorted.map((m) => <option value={m.letter}>[{m.letter}] {m.displayName} (#{m.rank})</option>)}
-    </select>
-    <label class="text-term-dim text-sm flex items-center gap-2">
-      <input type="checkbox" id="output-reasoning" />
-      show reasoning traces
-    </label>
-  </div>
+    <div class="flex flex-wrap items-center gap-4 mb-8 p-3 rounded-md border border-term-border bg-term-surface/40">
+      <label class="text-term-dim text-[11px] tracking-wider">MODEL</label>
+      <select id="output-select" class="bg-term-bg border border-term-border rounded px-3 py-1.5 text-term-fg text-sm hover:border-term-dim focus:border-term-green outline-none">
+        {sorted.map((m) => <option value={m.letter}>[{m.letter}] {m.displayName} (#{m.rank})</option>)}
+      </select>
+      <label class="text-term-dim text-sm flex items-center gap-2 cursor-pointer select-none">
+        <input type="checkbox" id="output-reasoning" class="accent-term-green" />
+        <span>show reasoning traces</span>
+      </label>
+    </div>
 
-  <div id="output-bodies">
-    {outputs.map((o) => (
-      <article data-letter={o.letter} class="output-body hidden space-y-8">
-        {o.turns.map((t, i) => (
-          <div class="turn">
-            <p class="text-term-green text-xs mb-2">&gt; turn {i + 1} — user</p>
-            <blockquote class={`border-l-2 ${TURN_BORDER[i] ?? 'border-term-green'} pl-4 md:pl-6 text-sm md:text-base leading-relaxed text-term-fg italic whitespace-pre-wrap`}>
-              {t.user}
-            </blockquote>
+    <div id="output-bodies" class="wrap-read">
+      {outputs.map((o) => (
+        <article data-letter={o.letter} class="output-body hidden space-y-10">
+          {o.turns.map((t, i) => (
+            <div class="turn">
+              <p class="text-term-green text-[11px] tracking-wider mb-2">&gt; turn {i + 1} · user</p>
+              <blockquote class={`border-l-2 ${TURN_BORDER[i] ?? 'border-term-green'} pl-4 md:pl-6 text-sm md:text-base leading-relaxed text-term-fg italic whitespace-pre-wrap`}>
+                {t.user}
+              </blockquote>
 
-            {t.reasoningHtml && (
-              <div class="reasoning-block hidden mt-4">
-                <div class="output-clamp p-4 bg-term-surface border border-term-border rounded relative overflow-hidden">
-                  <p class="text-term-green text-xs mb-2">// REASONING — turn {i + 1}</p>
-                  <div class="prose prose-invert prose-sm max-w-none text-term-dim" set:html={t.reasoningHtml}></div>
-                  <div class="output-fade absolute inset-x-0 bottom-0 h-16 pointer-events-none"
-                       style="background: linear-gradient(to top, var(--term-surface), transparent);"></div>
+              {t.reasoningHtml && (
+                <div class="reasoning-block hidden mt-4">
+                  <div class="output-clamp p-4 bg-term-surface border border-term-border rounded relative overflow-hidden">
+                    <p class="text-term-green text-[11px] tracking-wider mb-2">// REASONING — turn {i + 1}</p>
+                    <div class="prose prose-invert prose-sm max-w-none text-term-dim" set:html={t.reasoningHtml}></div>
+                    <div class="output-fade absolute inset-x-0 bottom-0 h-16 pointer-events-none"
+                         style="background: linear-gradient(to top, var(--term-surface), transparent);"></div>
+                  </div>
+                  <button class="output-expand mt-2 text-term-green text-sm hover:underline cursor-pointer">expand reasoning ↓</button>
                 </div>
-                <button class="output-expand mt-2 text-term-green text-sm hover:underline cursor-pointer">expand reasoning ↓</button>
-              </div>
-            )}
+              )}
 
-            <div class="mt-4">
-              <p class="text-term-dim text-xs mb-2">// assistant — turn {i + 1}</p>
-              <div class="output-clamp relative overflow-hidden">
-                <div class="prose prose-invert prose-sm max-w-none text-term-fg" set:html={t.assistantHtml}></div>
-                <div class="output-fade absolute inset-x-0 bottom-0 h-20 pointer-events-none"
-                     style="background: linear-gradient(to top, var(--term-bg), transparent);"></div>
+              <div class="mt-4">
+                <p class="text-term-dim text-[11px] tracking-wider mb-2">// assistant — turn {i + 1}</p>
+                <div class="output-clamp relative overflow-hidden">
+                  <div class="prose prose-invert prose-sm max-w-none text-term-fg" set:html={t.assistantHtml}></div>
+                  <div class="output-fade absolute inset-x-0 bottom-0 h-20 pointer-events-none"
+                       style="background: linear-gradient(to top, var(--term-bg), transparent);"></div>
+                </div>
+                <button class="output-expand mt-3 text-term-green text-sm hover:underline cursor-pointer">expand answer ↓</button>
               </div>
-              <button class="output-expand mt-3 text-term-green text-sm hover:underline cursor-pointer">expand answer ↓</button>
             </div>
-          </div>
-        ))}
-      </article>
-    ))}
+          ))}
+        </article>
+      ))}
+    </div>
   </div>
 </section>
 
