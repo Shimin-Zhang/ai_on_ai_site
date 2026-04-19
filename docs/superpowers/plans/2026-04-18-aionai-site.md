@@ -1238,7 +1238,7 @@ export function sampleSnippets(letter: Letter, markdown: string, seed: number): 
   const body = getAssistantBody(markdown);
   const sentences = splitSentences(body);
   const totalWords = sentences.reduce((acc, s) => acc + s.split(/\s+/).length, 0);
-  if (totalWords < 600) throw new Error(`Body for letter ${letter} is too short (${totalWords} words)`);
+  if (totalWords < 500) throw new Error(`Body for letter ${letter} is too short (${totalWords} words)`);
 
   const wordOffsets: number[] = [0];
   for (const s of sentences) wordOffsets.push(wordOffsets[wordOffsets.length - 1] + s.split(/\s+/).length);
