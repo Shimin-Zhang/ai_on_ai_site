@@ -1,0 +1,54 @@
+---
+// src/components/IdentificationMatrix.astro
+import models from '../data/models.json';
+import guesses from '../data/guesses.json';
+import type { Model, GuessMatrix, Letter } from '../lib/types';
+
+const evaluatorOrder: Letter[] = ['k','j','c','f','e','h','i','g','d','b','a'];
+const subjectOrder: Letter[] = (models as Model[]).slice().sort((a, b) => a.rank - b.rank).map((m) => m.letter);
+const modelByLetter = Object.fromEntries((models as Model[]).map((m) => [m.letter, m]));
+---
+<section id="id-matrix" class="py-12 border-b border-term-border">
+  <p class="text-term-green text-sm mb-2">## IDENTIFICATION_MATRIX</p>
+  <p class="text-term-dim text-xs mb-4">// what each evaluator (row) guessed for each subject (column). green = correct.</p>
+
+  <div class="overflow-x-auto">
+    <table class="border-collapse text-xs">
+      <thead>
+        <tr>
+          <th class="p-1"></th>
+          {subjectOrder.map((s) => (
+            <th class="p-1 text-term-dim font-normal text-center" title={modelByLetter[s].displayName}>[{s}]</th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {evaluatorOrder.map((ev) => (
+          <tr>
+            <th class="p-1 pr-2 text-term-dim font-normal text-right whitespace-nowrap" title={modelByLetter[ev].displayName}>
+              [{ev}]
+            </th>
+            {subjectOrder.map((sub) => {
+              const guess = (guesses as GuessMatrix)[ev]?.[sub];
+              const correct = guess?.correct ?? false;
+              return (
+                <td class="p-0">
+                  <div
+                    class={`idcell border border-term-border px-1.5 py-1 text-center min-w-[64px] cursor-pointer ${correct ? 'text-term-green border-term-green' : 'text-term-fg'}`}
+                    data-evaluator={ev}
+                    data-subject={sub}
+                    data-guess={guess?.text ?? '—'}
+                    data-correct={correct ? '1' : '0'}
+                  >{guess?.text ?? '—'}</div>
+                </td>
+              );
+            })}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+  <div id="id-tooltip" class="hidden fixed z-50 max-w-xs bg-term-surface border border-term-green rounded p-3 text-xs shadow-lg pointer-events-none"></div>
+</section>
+
+<script src="../scripts/id-matrix.ts"></script>
