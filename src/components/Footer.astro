@@ -1,0 +1,23 @@
+---
+// src/components/Footer.astro
+const PROMPT = "given everything you know about LLMs, AI, agent harnesses and agents, what are changes that should occur in our world that hasn't happened yet? think things through step by step and industry by industry";
+---
+<footer class="py-12 mt-8">
+  <div class="flex flex-wrap items-baseline justify-between gap-4 text-sm">
+    <div class="flex flex-wrap gap-4 items-center">
+      <a href="https://github.com/" class="text-term-green hover:underline">github →</a>
+      <button id="copy-prompt" class="text-term-fg border border-term-border rounded px-2 py-1 hover:bg-term-border">copy the prompt</button>
+    </div>
+    <button id="theme-toggle" class="text-term-dim border border-term-border rounded px-2 py-1 hover:bg-term-border">[ ] light mode</button>
+  </div>
+  <p class="mt-6 text-term-dim text-xs">
+    // raw markdown for outputs and evaluations is in the repo. run the same prompt yourself if you want to add to the dataset.
+  </p>
+</footer>
+
+<script define:vars={{ PROMPT }}>
+  document.getElementById('copy-prompt')?.addEventListener('click', () => {
+    navigator.clipboard.writeText(PROMPT);
+  });
+</script>
+<script src="../scripts/theme-toggle.ts"></script>
