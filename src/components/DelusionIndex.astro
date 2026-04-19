@@ -8,7 +8,8 @@ const maxAbs = Math.max(...sorted.map((m) => Math.abs(m.gap)));
 const ROW_H = 28;
 const LABEL_W = 200;
 const BAR_AREA = 280;
-const W = LABEL_W + BAR_AREA;
+const TEXT_PAD = 56; // room at edges for bar-end value labels like "+5.2"
+const W = LABEL_W + BAR_AREA + TEXT_PAD;
 const H = sorted.length * ROW_H + 20;
 const center = LABEL_W + BAR_AREA / 2;
 ---
