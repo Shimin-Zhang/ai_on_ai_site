@@ -1,5 +1,4 @@
 ---
-// src/components/RawOutputExplorer.astro
 import models from '../data/models.json';
 import { marked } from 'marked';
 import type { Model } from '../lib/types';
@@ -36,19 +35,34 @@ const outputs = sorted.map((m) => {
     {outputs.map((o) => (
       <article data-letter={o.letter} class="output-body hidden">
         {o.reasoningHtml && (
-          <div class="reasoning-block hidden mb-6 p-4 bg-term-surface border border-term-border rounded">
-            <p class="text-term-green text-xs mb-2">// REASONING TRACE</p>
-            <div class="prose prose-invert prose-sm max-w-none text-term-dim" set:html={o.reasoningHtml}></div>
+          <div class="reasoning-block hidden mb-6">
+            <div class="output-clamp p-4 bg-term-surface border border-term-border rounded relative overflow-hidden">
+              <p class="text-term-green text-xs mb-2">// REASONING TRACE</p>
+              <div class="prose prose-invert prose-sm max-w-none text-term-dim" set:html={o.reasoningHtml}></div>
+              <div class="output-fade absolute inset-x-0 bottom-0 h-16 pointer-events-none"
+                   style="background: linear-gradient(to top, var(--term-surface), transparent);"></div>
+            </div>
+            <button class="output-expand mt-2 text-term-green text-sm hover:underline cursor-pointer">expand reasoning ↓</button>
           </div>
         )}
-        <div class="prose prose-invert prose-sm max-w-none text-term-fg" set:html={o.answerHtml}></div>
+
+        <div class="output-clamp relative overflow-hidden">
+          <div class="prose prose-invert prose-sm max-w-none text-term-fg" set:html={o.answerHtml}></div>
+          <div class="output-fade absolute inset-x-0 bottom-0 h-20 pointer-events-none"
+               style="background: linear-gradient(to top, var(--term-bg), transparent);"></div>
+        </div>
+        <button class="output-expand mt-3 text-term-green text-sm hover:underline cursor-pointer">expand full answer ↓</button>
       </article>
     ))}
   </div>
 </section>
 
-<script>
-  // npm install marked is required by this component.
-</script>
+<style>
+  .output-clamp { max-height: 18rem; }
+  .expanded .output-clamp { max-height: none; }
+  .expanded .output-fade { display: none; }
+  .expanded > .output-expand,
+  .expanded .reasoning-block > .output-expand { display: none; }
+</style>
 
 <script src="../scripts/raw-explorer.ts"></script>
