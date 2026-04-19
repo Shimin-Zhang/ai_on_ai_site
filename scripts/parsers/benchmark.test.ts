@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { parseLeaderboard, parseScoreMatrix } from './benchmark.js';
+import { parseLeaderboard, parseScoreMatrix, parseGuessMatrix } from './benchmark.js';
 
 const SAMPLE_LEADERBOARD = `## 1. Model Score Rankings
 
@@ -54,5 +54,28 @@ describe('parseScoreMatrix', () => {
     expect(result.k.j).toBe(29);
     expect(result.b.j).toBe(28);
     expect(result.f.e).toBe(29);
+  });
+});
+
+const SAMPLE_GUESSES = `### Full Guess Matrix
+
+Each cell shows what the evaluator (row) guessed for that letter (column). Correct guesses in **bold**.
+
+| Evaluator | a (GLM) | b (Grok) | c (DeepSeek) | d (Qwen) | e (Gem Pro) | f (Gem Flash) | g (GPT-5.4) | h (MiniMax) | i (Kimi) | j (Opus 4.7) | k (Opus 4.6) |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| Opus 4.6 | GPT-4o | **Grok** | DeepSeek | Gemini | DeepSeek | Gem Flash | Claude | GPT-4o | o1/o3 | o3 | **Claude** |
+| Opus 4.7 | DeepSeek | **Grok** | GPT-4o | Llama | DeepSeek | **Gemini** | **GPT-5** | Claude | GPT-4.5 | **Claude** | **Claude** |
+
+---
+`;
+
+describe('parseGuessMatrix', () => {
+  it('extracts guesses with correct flags', () => {
+    const evaluatorOrder = ['k','j'] as const; // Opus 4.6 then Opus 4.7
+    const subjectOrder = ['a','b','c','d','e','f','g','h','i','j','k'] as const;
+    const result = parseGuessMatrix(SAMPLE_GUESSES, evaluatorOrder, subjectOrder);
+    expect(result.k.b).toEqual({ text: 'Grok', correct: true });
+    expect(result.k.a).toEqual({ text: 'GPT-4o', correct: false });
+    expect(result.j.f).toEqual({ text: 'Gemini', correct: true });
   });
 });

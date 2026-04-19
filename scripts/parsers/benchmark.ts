@@ -1,4 +1,4 @@
-import type { Letter, ScoreMatrix } from '../../src/lib/types.js';
+import type { Letter, ScoreMatrix, GuessMatrix, Guess } from '../../src/lib/types.js';
 
 export interface LeaderboardEntry {
   letter: Letter;
@@ -55,4 +55,37 @@ export function parseScoreMatrix(markdown: string, evaluatorOrder: readonly Lett
     }
   }
   return result as ScoreMatrix;
+}
+
+export function parseGuessMatrix(
+  markdown: string,
+  evaluatorOrder: readonly Letter[],
+  subjectOrder: readonly Letter[],
+): GuessMatrix {
+  const sectionMatch = markdown.match(/### Full Guess Matrix[\s\S]*?(?=^---|^## )/m);
+  if (!sectionMatch) throw new Error('Guess matrix section not found');
+
+  const result: Partial<Record<Letter, Record<Letter, Guess>>> = {};
+  for (const letter of evaluatorOrder) result[letter] = {} as Record<Letter, Guess>;
+
+  const dataRowRegex = /^\|\s*([^|]+?)\s*\|((?:[^|\n]*\|){11})/gm;
+  // Skip the header row by tracking which evaluator we're on.
+  let evaluatorIdx = 0;
+  let match: RegExpExecArray | null;
+  while ((match = dataRowRegex.exec(sectionMatch[0])) !== null) {
+    const firstCell = match[1].trim();
+    if (firstCell.toLowerCase() === 'evaluator' || firstCell.startsWith('---')) continue;
+    if (evaluatorIdx >= evaluatorOrder.length) break;
+    const evaluator = evaluatorOrder[evaluatorIdx];
+    const cellTexts = match[2].split('|').slice(0, 11).map((s) => s.trim());
+    for (let i = 0; i < 11; i++) {
+      const subject = subjectOrder[i];
+      const raw = cellTexts[i];
+      const correct = raw.startsWith('**') && raw.endsWith('**');
+      const text = correct ? raw.slice(2, -2).trim() : raw;
+      result[evaluator]![subject] = { text, correct };
+    }
+    evaluatorIdx++;
+  }
+  return result as GuessMatrix;
 }
