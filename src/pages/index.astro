@@ -1,7 +1,22 @@
 ---
 import '../styles/global.css';
+import Hero from '../components/Hero.astro';
+import ThePrompt from '../components/ThePrompt.astro';
+import Leaderboard from '../components/Leaderboard.astro';
+import Verdict from '../components/Verdict.astro';
+import PersonalityCards from '../components/PersonalityCards.astro';
+import DelusionIndex from '../components/DelusionIndex.astro';
+import BeatTheAIs from '../components/BeatTheAIs.astro';
+import ScoreHeatmap from '../components/ScoreHeatmap.astro';
+import IdentificationMatrix from '../components/IdentificationMatrix.astro';
+import EvaluatorDeepDive from '../components/EvaluatorDeepDive.astro';
+import RawOutputExplorer from '../components/RawOutputExplorer.astro';
+import Methodology from '../components/Methodology.astro';
+import Limitations from '../components/Limitations.astro';
+import Footer from '../components/Footer.astro';
 ---
-<html lang="en" data-theme="dark">
+<!DOCTYPE html>
+<html lang="en">
   <head>
     <script is:inline>
       try {
@@ -11,12 +26,26 @@ import '../styles/global.css';
       } catch (e) {}
     </script>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>AIonAI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AIonAI — 11 LLMs graded each other</title>
+    <meta name="description" content="11 LLMs answered the same prompt, then graded each other's anonymized outputs. Most couldn't recognize themselves." />
   </head>
   <body class="bg-term-bg text-term-fg font-mono">
-    <main class="max-w-content mx-auto px-4 py-8">
-      <p class="text-term-green">$ aionai --boot</p>
+    <main class="max-w-content mx-auto px-4 md:px-6">
+      <Hero />
+      <ThePrompt />
+      <Leaderboard />
+      <Verdict />
+      <PersonalityCards />
+      <DelusionIndex />
+      <BeatTheAIs />
+      <ScoreHeatmap />
+      <IdentificationMatrix />
+      <EvaluatorDeepDive />
+      <RawOutputExplorer />
+      <Methodology />
+      <Limitations />
+      <Footer />
     </main>
   </body>
 </html>
