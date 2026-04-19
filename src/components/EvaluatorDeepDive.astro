@@ -1,0 +1,38 @@
+---
+// src/components/EvaluatorDeepDive.astro
+import evaluators from '../data/evaluators.json';
+import type { Evaluator } from '../lib/types';
+const sorted = (evaluators as Evaluator[]).slice().sort((a, b) => a.sharpnessRank - b.sharpnessRank);
+---
+<section id="evaluators" class="py-12 border-b border-term-border">
+  <p class="text-term-green text-sm mb-2">## EVALUATORS_RANKED</p>
+  <p class="text-term-dim text-xs mb-4">// who could tell models apart. range = lowest score given → highest, across 11 subjects.</p>
+
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm border-collapse">
+      <thead>
+        <tr class="border-b border-term-border text-term-dim text-left">
+          <th class="py-2 px-2">#</th>
+          <th class="py-2 px-2">Evaluator</th>
+          <th class="py-2 px-2 text-right">Correct IDs</th>
+          <th class="py-2 px-2 text-right">Accuracy</th>
+          <th class="py-2 px-2 text-right">Score range</th>
+        </tr>
+      </thead>
+      <tbody>
+        {sorted.map((e) => (
+          <tr class="border-b border-term-border/40">
+            <td class="py-2 px-2 text-term-green">{e.sharpnessRank}</td>
+            <td class="py-2 px-2 text-term-fg">[{e.letter}] {e.displayName}</td>
+            <td class="py-2 px-2 text-right text-term-yellow">{e.correctIds}/11</td>
+            <td class="py-2 px-2 text-right">{e.accuracyPct}%</td>
+            <td class="py-2 px-2 text-right text-term-dim">{e.scoreRange[0]}–{e.scoreRange[1]}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+  <p class="mt-4 text-term-dim text-xs">
+    // The best AI evaluator (Opus 4.7) hit 45%. The worst (Gemini Flash, MiniMax) got nothing right and gave 9 of 11 models a 29.
+  </p>
+</section>
