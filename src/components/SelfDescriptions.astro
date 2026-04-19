@@ -1,0 +1,37 @@
+---
+import models from '../data/models.json';
+import type { Model } from '../lib/types';
+import Pill from '../lib/Pill.astro';
+
+const sorted = (models as Model[]).slice().sort((a, b) => a.rank - b.rank);
+---
+<section id="self-descriptions" class="py-12 border-b border-term-border">
+  <p class="text-term-green text-sm mb-2">## SELF_DESCRIPTIONS</p>
+  <p class="text-term-dim text-xs mb-6">
+    // each model was shown all 11 anonymized transcripts — including its own — and asked to describe the personality behind each. these are the lines each one wrote about what turned out to be itself.
+  </p>
+
+  <ol class="space-y-5">
+    {sorted.map((m) => (
+      <li class="border-l-2 border-term-border pl-4 md:pl-6">
+        <div class="flex flex-wrap items-baseline gap-3 text-xs text-term-dim">
+          <Pill letter={m.letter} />
+          <span class="text-term-fg font-medium">{m.displayName}</span>
+          <span>#{m.rank}</span>
+          <span class="text-term-yellow">self {m.selfScore}/30</span>
+          <span>peer avg {m.peerAverage.toFixed(1)}</span>
+          <span class={m.gap > 0 ? 'text-term-red' : 'text-term-green'}>
+            gap {m.gap > 0 ? '+' : ''}{m.gap.toFixed(1)}
+          </span>
+        </div>
+        <blockquote class="mt-2 text-term-fg italic leading-relaxed">
+          "{m.selfDescription}"
+        </blockquote>
+      </li>
+    ))}
+  </ol>
+
+  <p class="mt-6 text-term-dim text-sm">
+    Compare against the Delusion Index above — the bigger the red bar, the wider the gap between how a model sees itself and how peers saw it. For the most detail, click a model's letter pill to jump to its personality card and read the peer summary.
+  </p>
+</section>
