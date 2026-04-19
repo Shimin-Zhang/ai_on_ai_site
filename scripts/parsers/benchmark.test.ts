@@ -1,5 +1,53 @@
 import { describe, it, expect } from 'vitest';
 import { parseLeaderboard, parseScoreMatrix, parseGuessMatrix } from './benchmark.js';
+import { parseEvaluatorAccuracy, parseFindings } from './benchmark.js';
+
+const SAMPLE_ACCURACY = `### Identification Accuracy (as evaluator)
+
+How many of the 11 letter-to-model mappings each evaluator got correct (matching provider/family).
+
+| Rank | Evaluator | Correct | Accuracy |
+|------|-----------|---------|----------|
+| 1 | anthropic/claude-opus-4.7 | 5 | 45% |
+| 2 | openai/gpt-5.4 | 3 | 27% |
+| 10 | google/gemini-2.5-flash | 0 | 0% |
+`;
+
+describe('parseEvaluatorAccuracy', () => {
+  it('extracts ranked evaluators with correct counts', () => {
+    const result = parseEvaluatorAccuracy(SAMPLE_ACCURACY);
+    expect(result).toHaveLength(3);
+    expect(result[0]).toMatchObject({ slug: 'anthropic/claude-opus-4.7', correctIds: 5, accuracyPct: 45, sharpnessRank: 1 });
+    expect(result[2]).toMatchObject({ slug: 'google/gemini-2.5-flash', correctIds: 0, sharpnessRank: 10 });
+  });
+});
+
+const SAMPLE_VERDICT = `## 3. Verdict
+
+### On the benchmark task (analysis quality)
+
+**Claude Opus 4.7 and 4.6 dominated**, finishing first and second.
+
+**GPT-5.4 took a clear third place**.
+
+### On model identification
+
+Model identification was **extremely difficult**.
+
+### Bottom line
+
+The benchmark reveals a clear three-tier structure.
+
+---
+`;
+
+describe('parseFindings', () => {
+  it('returns verdict subsections as separate entries', () => {
+    const result = parseFindings(SAMPLE_VERDICT);
+    expect(result.verdict.length).toBeGreaterThanOrEqual(3);
+    expect(result.verdict[0]).toContain('Claude Opus 4.7 and 4.6 dominated');
+  });
+});
 
 const SAMPLE_LEADERBOARD = `## 1. Model Score Rankings
 

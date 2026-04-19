@@ -1,4 +1,4 @@
-import type { Letter, ScoreMatrix, GuessMatrix, Guess } from '../../src/lib/types.js';
+import type { Letter, ScoreMatrix, GuessMatrix, Guess, Findings } from '../../src/lib/types.js';
 
 export interface LeaderboardEntry {
   letter: Letter;
@@ -88,4 +88,43 @@ export function parseGuessMatrix(
     evaluatorIdx++;
   }
   return result as GuessMatrix;
+}
+
+export interface EvaluatorAccuracyRow {
+  slug: string;
+  correctIds: number;
+  accuracyPct: number;
+  sharpnessRank: number;
+}
+
+export function parseEvaluatorAccuracy(markdown: string): EvaluatorAccuracyRow[] {
+  const sectionMatch = markdown.match(/### Identification Accuracy \(as evaluator\)[\s\S]*?(?=^### |^## |\n---|(?![\s\S]))/m);
+  if (!sectionMatch) throw new Error('Evaluator accuracy section not found');
+  const rowRegex = /^\|\s*(\d+)\s*\|\s*([^\s|]+\/[^\s|]+)\s*\|\s*(\d+)\s*\|\s*(\d+)%\s*\|/gm;
+  const out: EvaluatorAccuracyRow[] = [];
+  let match: RegExpExecArray | null;
+  while ((match = rowRegex.exec(sectionMatch[0])) !== null) {
+    out.push({
+      sharpnessRank: Number(match[1]),
+      slug: match[2],
+      correctIds: Number(match[3]),
+      accuracyPct: Number(match[4]),
+    });
+  }
+  return out;
+}
+
+export function parseFindings(markdown: string): Findings {
+  const sectionMatch = markdown.match(/## 3\. Verdict[\s\S]*?(?=^## 4\.|\n---|(?![\s\S]))/m);
+  if (!sectionMatch) throw new Error('Verdict section not found');
+  const section = sectionMatch[0];
+  const subsections = section
+    .split(/^### .+$/m)
+    .slice(1) // first chunk is the heading line
+    .map((s) => s.trim())
+    .filter(Boolean);
+  return {
+    verdict: subsections,
+    keyFindings: [], // populated separately if needed
+  };
 }
