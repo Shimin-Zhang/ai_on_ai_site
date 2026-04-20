@@ -18,6 +18,14 @@ const SHARE_TEXT = "11 LLMs predict how AI changes the world, then graded agains
           class="inline-flex items-center gap-1.5 text-term-fg border border-term-border rounded px-3 py-1.5 text-xs hover:border-term-green hover:text-term-green transition-colors">
           <span aria-hidden="true">⤴</span> post on X
         </button>
+        <button id="share-bsky"
+          class="inline-flex items-center gap-1.5 text-term-fg border border-term-border rounded px-3 py-1.5 text-xs hover:border-term-green hover:text-term-green transition-colors">
+          <span aria-hidden="true">☁</span> post on Bluesky
+        </button>
+        <button id="share-reddit"
+          class="inline-flex items-center gap-1.5 text-term-fg border border-term-border rounded px-3 py-1.5 text-xs hover:border-term-green hover:text-term-green transition-colors">
+          <span aria-hidden="true">↑</span> post on Reddit
+        </button>
         <button id="copy-link"
           class="inline-flex items-center gap-1.5 text-term-fg border border-term-border rounded px-3 py-1.5 text-xs hover:border-term-green transition-colors">
           <span aria-hidden="true">⌁</span> <span class="link-label">copy link</span>
@@ -73,11 +81,19 @@ const SHARE_TEXT = "11 LLMs predict how AI changes the world, then graded agains
     }
   });
 
-  const shareX = document.getElementById('share-x');
-  shareX?.addEventListener('click', () => {
-    const url = location.origin + location.pathname;
-    const intent = `https://x.com/intent/post?text=${encodeURIComponent(SHARE_TEXT)}&url=${encodeURIComponent(url)}`;
-    window.open(intent, '_blank', 'noopener');
+  function pageUrl() { return location.origin + location.pathname; }
+  function openIntent(href) { window.open(href, '_blank', 'noopener'); }
+
+  document.getElementById('share-x')?.addEventListener('click', () => {
+    openIntent(`https://x.com/intent/post?text=${encodeURIComponent(SHARE_TEXT)}&url=${encodeURIComponent(pageUrl())}`);
+  });
+
+  document.getElementById('share-bsky')?.addEventListener('click', () => {
+    openIntent(`https://bsky.app/intent/compose?text=${encodeURIComponent(`${SHARE_TEXT} ${pageUrl()}`)}`);
+  });
+
+  document.getElementById('share-reddit')?.addEventListener('click', () => {
+    openIntent(`https://www.reddit.com/submit?url=${encodeURIComponent(pageUrl())}&title=${encodeURIComponent(SHARE_TEXT)}`);
   });
 </script>
 <script src="../scripts/theme-toggle.ts"></script>
