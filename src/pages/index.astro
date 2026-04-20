@@ -16,8 +16,8 @@ import Limitations from '../components/Limitations.astro';
 import Footer from '../components/Footer.astro';
 import TopNav from '../components/TopNav.astro';
 
-const title = "AIonAI Arena — 11 LLMs graded each other's work, blind";
-const description = "11 LLMs answered the same prompt, then graded each other's anonymized outputs. Most couldn't recognize themselves.";
+const title = "AIonAI Arena — 11 LLMs predict AI's impact, graded each other blind";
+const description = "11 LLMs predict how AI changes the world, then graded against each other blind. They mostly missed themselves.";
 const canonical = Astro.site?.toString() ?? '';
 const ogImage = new URL('/og.png', Astro.site).toString();
 ---
@@ -45,7 +45,7 @@ const ogImage = new URL('/og.png', Astro.site).toString();
     <meta property="og:image" content={ogImage} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="AIonAI Arena — 11 LLMs graded each other's work, blind. Most couldn't spot themselves." />
+    <meta property="og:image:alt" content="AIonAI Arena — 11 LLMs predicted how AI changes the world, graded each other blind, and mostly missed themselves." />
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />

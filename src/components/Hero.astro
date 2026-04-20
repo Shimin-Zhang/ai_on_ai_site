@@ -20,16 +20,13 @@ const bestEvaluator = (evaluators as Evaluator[]).slice().sort((a, b) => a.sharp
       <div>
         <h1 class="text-3xl md:text-5xl font-medium leading-[1.1] tracking-tight">
           <span class="text-term-fg">11 LLMs</span>
-          <span class="text-term-dim">graded each other's work,</span>
+          <span class="text-term-dim">predict how</span>
+          <span class="text-term-fg">AI changes the world,</span>
+          <span class="text-term-dim">then graded them against each other</span>
           <span class="text-term-fg">blind.</span>
-          <span class="block mt-2">
-            <span class="text-term-fg">Most couldn't</span>
-            <span class="text-term-dim">spot</span>
-            <span class="text-term-fg">themselves.</span>
-          </span>
         </h1>
         <p class="mt-6 text-term-dim text-base md:text-lg max-w-[54ch] leading-relaxed">
-          Same prompt for all 11. Outputs anonymized as <span class="text-term-fg">a</span>–<span class="text-term-fg">k</span>. Then every model scored all 11 transcripts and guessed who wrote which — including its own.
+          Same prompt for all 11; I anonymized the outputs as <span class="text-term-fg">a</span>–<span class="text-term-fg">k</span>, then asked every model to score all 11 transcripts and guess who wrote each, their own included. <span class="text-term-fg">They mostly missed themselves.</span>
         </p>
 
         <div class="mt-8 flex flex-wrap items-center gap-3 text-xs">
