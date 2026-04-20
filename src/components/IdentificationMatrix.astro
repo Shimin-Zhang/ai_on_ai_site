@@ -5,8 +5,9 @@ import guesses from '../data/guesses.json';
 import type { Model, GuessMatrix, Letter } from '../lib/types';
 import SectionHeader from '../lib/SectionHeader.astro';
 
-const evaluatorOrder: Letter[] = ['k','j','c','f','e','h','i','g','d','b','a'];
-const subjectOrder: Letter[] = (models as Model[]).slice().sort((a, b) => a.rank - b.rank).map((m) => m.letter);
+const rankedLetters: Letter[] = (models as Model[]).slice().sort((a, b) => a.rank - b.rank).map((m) => m.letter);
+const evaluatorOrder: Letter[] = rankedLetters;
+const subjectOrder: Letter[] = rankedLetters;
 const modelByLetter = Object.fromEntries((models as Model[]).map((m) => [m.letter, m]));
 ---
 <section id="id-matrix" class="py-16 md:py-20">
