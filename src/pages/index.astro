@@ -16,7 +16,7 @@ import Limitations from '../components/Limitations.astro';
 import Footer from '../components/Footer.astro';
 import TopNav from '../components/TopNav.astro';
 
-const title = "AIonAI Arena — 11 LLMs predict AI's impact, graded each other blind";
+const title = "AI-on-AI Arena — 11 LLMs predict AI's impact, graded each other blind";
 const description = "11 LLMs predict how AI changes the world, then graded against each other blind. They mostly missed themselves.";
 const baseUrl = new URL(import.meta.env.BASE_URL.replace(/\/?$/, '/'), Astro.site);
 const canonical = baseUrl.toString();
@@ -40,14 +40,14 @@ const ogImage = new URL('og.png', baseUrl).toString();
     <link rel="canonical" href={canonical} />
 
     <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="AIonAI Arena" />
+    <meta property="og:site_name" content="AI-on-AI Arena" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={ogImage} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="AIonAI Arena — 11 LLMs predicted how AI changes the world, graded each other blind, and mostly missed themselves." />
+    <meta property="og:image:alt" content="AI-on-AI Arena — 11 LLMs predicted how AI changes the world, graded each other blind, and mostly missed themselves." />
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
