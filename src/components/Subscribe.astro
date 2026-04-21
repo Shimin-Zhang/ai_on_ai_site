@@ -91,6 +91,7 @@ const FORM_ENDPOINT = 'https://app.kit.com/forms/9351573/subscriptions';
     buttonLabel.textContent = 'subscribing\u2026';
     setStatus('', 'idle');
 
+    // no-cors: HTTP errors resolve as opaque (status 0); only network failures throw.
     try {
       await fetch(endpoint, {
         method: 'POST',
