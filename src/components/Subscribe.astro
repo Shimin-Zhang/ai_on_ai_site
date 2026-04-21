@@ -40,3 +40,71 @@ const FORM_ENDPOINT = 'https://app.kit.com/forms/9351573/subscriptions';
        class="mt-3 text-xs text-term-dim min-h-[1.25rem]"></p>
   </div>
 </section>
+
+<script>
+  const form = document.getElementById('subscribe-form') as HTMLFormElement | null;
+  const status = document.getElementById('subscribe-status');
+  const emailInput = document.getElementById('subscribe-email') as HTMLInputElement | null;
+  const button = form?.querySelector<HTMLButtonElement>('button[type="submit"]') ?? null;
+  const buttonLabel = button?.querySelector<HTMLElement>('.subscribe-label') ?? null;
+
+  function setStatus(text: string, tone: 'idle' | 'ok' | 'err') {
+    if (!status) return;
+    status.textContent = text;
+    status.classList.remove('text-term-dim', 'text-term-green', 'text-term-red');
+    status.classList.add(
+      tone === 'ok' ? 'text-term-green' : tone === 'err' ? 'text-term-red' : 'text-term-dim'
+    );
+  }
+
+  function showSuccess() {
+    form?.classList.add('hidden');
+    setStatus('\u2713 check your inbox to confirm', 'ok');
+  }
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!form || !emailInput || !button || !buttonLabel) return;
+
+    const data = new FormData(form);
+    const honeypot = (data.get('website') ?? '').toString().trim();
+    if (honeypot) {
+      // Bot tripped the honeypot — fake the success state, send nothing.
+      showSuccess();
+      return;
+    }
+
+    if (!emailInput.checkValidity()) {
+      setStatus("\u00d7 that doesn't look like an email", 'err');
+      emailInput.focus();
+      return;
+    }
+
+    const endpoint = form.dataset.endpoint;
+    if (!endpoint) {
+      setStatus('\u2717 form misconfigured — email me at shiminlearnsthings@gmail.com', 'err');
+      return;
+    }
+
+    const originalLabel = buttonLabel.textContent;
+    button.disabled = true;
+    buttonLabel.textContent = 'subscribing\u2026';
+    setStatus('', 'idle');
+
+    try {
+      await fetch(endpoint, {
+        method: 'POST',
+        body: data,
+        mode: 'no-cors',
+      });
+      showSuccess();
+    } catch (err) {
+      button.disabled = false;
+      buttonLabel.textContent = originalLabel ?? 'subscribe';
+      setStatus(
+        '\u2717 form choked \u2014 try again or email me at shiminlearnsthings@gmail.com',
+        'err'
+      );
+    }
+  });
+</script>
