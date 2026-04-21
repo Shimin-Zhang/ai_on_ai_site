@@ -1,0 +1,42 @@
+---
+// src/components/Subscribe.astro
+import SectionHeader from '../lib/SectionHeader.astro';
+const FORM_ENDPOINT = 'https://app.kit.com/forms/9351573/subscriptions';
+---
+<section id="subscribe" class="py-16 md:py-20">
+  <div class="wrap-read">
+    <SectionHeader num="13" title="SUBSCRIBE">· monthly · one email · no spam</SectionHeader>
+
+    <p class="text-term-fg leading-relaxed mb-5">
+      I'll send one short email when new models join the arena —
+      their rank, whether they spotted themselves, any surprises.
+    </p>
+
+    <form id="subscribe-form" novalidate
+          class="grid gap-2 sm:grid-cols-[1fr_auto] items-stretch"
+          data-endpoint={FORM_ENDPOINT}>
+      <label for="subscribe-email" class="sr-only">email address</label>
+      <input id="subscribe-email" name="email_address" type="email"
+             required autocomplete="email" inputmode="email"
+             placeholder="name@domain.tld"
+             class="bg-transparent border border-term-border rounded px-3 py-2
+                    text-sm placeholder:text-term-dim focus:outline-none
+                    focus:border-term-green" />
+      <!-- honeypot: real users leave this empty -->
+      <input type="text" name="website" tabindex="-1" autocomplete="off"
+             aria-hidden="true"
+             class="hidden" />
+      <button type="submit"
+              class="inline-flex items-center justify-center gap-1.5
+                     text-term-fg border border-term-border rounded px-3 py-2
+                     text-xs hover:border-term-green hover:text-term-green
+                     transition-colors">
+        <span aria-hidden="true">$</span>
+        <span class="subscribe-label">subscribe</span>
+      </button>
+    </form>
+
+    <p id="subscribe-status" role="status" aria-live="polite"
+       class="mt-3 text-xs text-term-dim min-h-[1.25rem]"></p>
+  </div>
+</section>
