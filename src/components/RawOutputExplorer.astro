@@ -27,23 +27,31 @@ const outputs = sorted.map((m) => {
     })),
   };
 });
+const BASE = import.meta.env.BASE_URL;
 ---
-<section id="explorer" class="py-16 md:py-20">
+<section id="explorer" class="py-16 md:py-20" data-base={BASE}>
   <div class="wrap-data">
-    <SectionHeader num="10" title="RAW_OUTPUT_EXPLORER">pick a model · full three-turn transcript</SectionHeader>
+    <SectionHeader num="10" title="RAW_OUTPUT_EXPLORER">two views · responses or raw gradings</SectionHeader>
 
     <div class="flex flex-wrap items-center gap-4 mb-8 p-3 rounded-md border border-term-border bg-term-surface/40">
-      <label class="text-term-dim text-[11px] tracking-wider">MODEL</label>
+      <label for="view-select" class="text-term-dim text-[11px] tracking-wider">VIEW</label>
+      <select id="view-select" class="bg-term-bg border border-term-border rounded px-3 py-1.5 text-term-fg text-sm hover:border-term-dim focus:border-term-green outline-none">
+        <option value="responses">responses</option>
+        <option value="gradings">gradings</option>
+      </select>
+
+      <label id="entity-label" for="output-select" class="text-term-dim text-[11px] tracking-wider">MODEL</label>
       <select id="output-select" class="bg-term-bg border border-term-border rounded px-3 py-1.5 text-term-fg text-sm hover:border-term-dim focus:border-term-green outline-none">
         {sorted.map((m) => <option value={m.letter}>[{m.letter}] {m.displayName} (#{m.rank})</option>)}
       </select>
-      <label class="text-term-dim text-sm flex items-center gap-2 cursor-pointer select-none">
+
+      <label id="reasoning-toggle" class="text-term-dim text-sm flex items-center gap-2 cursor-pointer select-none">
         <input type="checkbox" id="output-reasoning" class="accent-term-green" />
         <span>show reasoning traces</span>
       </label>
     </div>
 
-    <div id="output-bodies" class="wrap-read">
+    <div id="responses-body" class="wrap-read">
       {outputs.map((o) => (
         <article data-letter={o.letter} class="output-body hidden space-y-10">
           {o.turns.map((t, i) => (
@@ -78,6 +86,13 @@ const outputs = sorted.map((m) => {
           ))}
         </article>
       ))}
+    </div>
+
+    <div id="gradings-body" class="wrap-read hidden">
+      <article class="grading-body space-y-4">
+        <p id="grading-status" class="text-term-dim text-xs min-h-[1.25rem]"></p>
+        <div id="grading-content" class="prose prose-invert prose-sm max-w-none text-term-fg"></div>
+      </article>
     </div>
   </div>
 </section>
