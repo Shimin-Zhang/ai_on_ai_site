@@ -1,7 +1,8 @@
 type View = 'responses' | 'gradings';
 
 const section = document.getElementById('explorer');
-const BASE = section?.dataset.base ?? '/';
+const rawBase = section?.dataset.base ?? '/';
+const BASE = rawBase.endsWith('/') ? rawBase : rawBase + '/';
 
 const viewSelect = document.getElementById('view-select') as HTMLSelectElement | null;
 const outputSelect = document.getElementById('output-select') as HTMLSelectElement | null;
