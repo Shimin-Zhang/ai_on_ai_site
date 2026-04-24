@@ -12,12 +12,15 @@ import {
 import { extractQuotesFromEvalMarkdown } from './parsers/eval-quotes.js';
 import { sampleSnippets } from './parsers/puzzle-snippets.js';
 import { parseTranscript } from './parsers/raw-outputs.js';
+import { marked } from 'marked';
 
 const ROOT = process.cwd();
 const EVAL_DIR = join(ROOT, 'eval');
 const RESULTS_DIR = join(ROOT, 'results');
 const OUT_DIR = join(ROOT, 'src', 'data');
 const OUTPUTS_DIR = join(OUT_DIR, 'outputs');
+const PUBLIC_DIR = join(ROOT, 'public');
+const EVALUATIONS_DIR = join(PUBLIC_DIR, 'data', 'evaluations');
 
 function write(name: string, data: unknown) {
   writeFileSync(join(OUT_DIR, name), JSON.stringify(data, null, 2));
@@ -30,6 +33,7 @@ function slugToFile(slug: string): string {
 function main() {
   if (!existsSync(OUT_DIR)) mkdirSync(OUT_DIR, { recursive: true });
   if (!existsSync(OUTPUTS_DIR)) mkdirSync(OUTPUTS_DIR, { recursive: true });
+  if (!existsSync(EVALUATIONS_DIR)) mkdirSync(EVALUATIONS_DIR, { recursive: true });
 
   const answerKey = parseAnswerKey(readFileSync(join(EVAL_DIR, 'answer_key.md'), 'utf-8'));
   const benchmark = readFileSync(join(EVAL_DIR, 'benchmark_results.md'), 'utf-8');
@@ -126,6 +130,30 @@ function main() {
     puzzleSnippets[letter] = sampleSnippets(letter, md, snippetSeed++);
   }
 
+  // Raw gradings — parse each evaluator's eval/*.md, render the single
+  // assistant turn to HTML, and emit one JSON per evaluator into
+  // public/data/evaluations/ for lazy runtime fetching.
+  for (const letter of subjectOrder) {
+    const model = models.find((m) => m.letter === letter);
+    if (!model) continue;
+    const src = join(EVAL_DIR, slugToFile(model.slug));
+    if (!existsSync(src)) {
+      console.warn(`Missing eval for ${letter} (${model.slug})`);
+      continue;
+    }
+    const md = readFileSync(src, 'utf-8');
+    const transcript = parseTranscript(md);
+    const gradingMarkdown = transcript.turns[0]?.assistant ?? '';
+    if (!gradingMarkdown) {
+      console.warn(`Empty grading for ${letter} (${model.slug})`);
+    }
+    const gradingHtml = marked.parse(gradingMarkdown) as string;
+    writeFileSync(
+      join(EVALUATIONS_DIR, `${letter}.json`),
+      JSON.stringify({ letter, gradingHtml }),
+    );
+  }
+
   write('models.json', models);
   write('scores.json', scores);
   write('guesses.json', guesses);
@@ -134,7 +162,7 @@ function main() {
   write('eval-quotes.json', evalQuotes);
   write('puzzle-snippets.json', puzzleSnippets);
 
-  console.log('build-data: wrote 7 JSON files + 11 raw outputs');
+  console.log('build-data: wrote 7 JSON files + 11 raw outputs + 11 evaluations');
 }
 
 function recognitionFor(slug: string): Model['recognizedSelf'] {
