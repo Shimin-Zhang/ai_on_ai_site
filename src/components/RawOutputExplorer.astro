@@ -108,4 +108,18 @@ const BASE = import.meta.env.BASE_URL;
   .expanded > .output-expand { display: none; }
 </style>
 
+<style is:global>
+  /* prose-invert hard-codes light colors for headings/bold/code; override in light theme. */
+  [data-theme="light"] #explorer .prose :is(h1, h2, h3, h4, h5, h6),
+  [data-theme="light"] #explorer .prose :is(strong, b),
+  [data-theme="light"] #explorer .prose code,
+  [data-theme="light"] #explorer .prose a {
+    color: var(--term-fg);
+  }
+  [data-theme="light"] #explorer .prose blockquote,
+  [data-theme="light"] #explorer .prose em {
+    color: var(--term-fg);
+  }
+</style>
+
 <script src="../scripts/raw-explorer.ts"></script>
